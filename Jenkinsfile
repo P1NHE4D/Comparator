@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'P1NHE4D', url: 'https://github.com/P1NHE4D/Comparator.git', branch: 'master'
+                git credentialsId: 'P1NHE4D', url: 'git@github.com:P1NHE4D/Comparator.git', branch: 'master'
             }
         }
         stage('Restore Packages') {
