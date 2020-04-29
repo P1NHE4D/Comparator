@@ -27,7 +27,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh "dotnet test Comparator/Comparator.csproj --logger \"trx;LogFileName=unit_tests.trx\""
-                step([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: true, keepLongStdio: true])
+                step([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
             }
         }
     }
