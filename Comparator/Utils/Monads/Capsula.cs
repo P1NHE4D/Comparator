@@ -38,21 +38,21 @@ namespace Comparator.Utils.Monads
 
     public sealed class Failure<T> : Capsule<T>
     {
-        private readonly string message;
+        private readonly string _message;
 
         public Failure(string message)
         {
-            this.message = message;
+            this._message = message;
         }
 
         public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func)
         {
-            return new Failure<TReturn>(message);
+            return new Failure<TReturn>(_message);
         }
 
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func)
         {
-            return new Failure<TReturn>(message);
+            return new Failure<TReturn>(_message);
         }
 
         public override T Return(T defaultValue)
