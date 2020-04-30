@@ -12,5 +12,6 @@ Global
 		{9B138BE7-D8C5-4758-ACBA-B1D9ADB11244}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B138BE7-D8C5-4758-ACBA-B1D9ADB11244}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B138BE7-D8C5-4758-ACBA-B1D9ADB11244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B138BE7-D8C5-4758-ACBA-B1D9ADB11244}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
