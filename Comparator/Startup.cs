@@ -28,6 +28,7 @@ namespace Comparator
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureLoggerService();
+            services.ConfigureSwagger();
             services.AddControllers();
         }
 
@@ -38,6 +39,16 @@ namespace Comparator
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseStaticFiles();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(opts =>
+            {
+                opts.SwaggerEndpoint("/swagger/APIDoc/swagger.json", "Comparator Web API");
+                opts.RoutePrefix = "docs/web-api";
+            });
 
             app.UseHttpsRedirection();
 
