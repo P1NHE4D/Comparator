@@ -1,15 +1,13 @@
 using System;
+using Comparator.Utils.Logger;
 
 namespace Comparator.Utils.Monads
 {
     public abstract class Capsule<T>
     {
         public abstract Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func);
-
         public abstract Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func);
-        
-        // TODO Add Catch function
-
+        public abstract T Catch(Func<string, T> func);
         public abstract T Return(T defaultValue);
     }
 
@@ -17,50 +15,30 @@ namespace Comparator.Utils.Monads
     {
         private readonly T _value;
 
-        public Success(T value)
-        {
-            this._value = value;
-        }
+        public Success(T value) => _value = value;
 
-        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func)
-        {
-            return func(this._value);
-        }
+        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func) => func(_value);
 
-        public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func)
-        {
-            return new Success<TReturn>(func(this._value));
-        }
+        public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Success<TReturn>(func(_value));
 
-        public override T Return(T defaultValue)
-        {
-            return this._value;
-        }
+        public override T Catch(Func<string, T> func) => _value;
+
+        public override T Return(T defaultValue) => _value;
     }
 
     public sealed class Failure<T> : Capsule<T>
     {
         private readonly string _message;
 
-        public Failure(string message)
-        {
-            this._message = message;
-        }
+        public Failure(string message) => _message = message;
 
-        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func)
-        {
-            return new Failure<TReturn>(_message);
-        }
+        public Failure(string message, ILoggerManager logger) : this(message) => logger.LogError(message);
 
-        public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func)
-        {
-            return new Failure<TReturn>(_message);
-        }
+        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func) => new Failure<TReturn>(_message);
 
-        public override T Return(T defaultValue)
-        {
-            return defaultValue;
-        }
+        public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Failure<TReturn>(_message);
+
+        public override T Catch(Func<string, T> func) => func(_message);
+        public override T Return(T defaultValue) => defaultValue;
     }
-
 }
