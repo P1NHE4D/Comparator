@@ -47,6 +47,7 @@ namespace Comparator
             app.UseSwaggerUI(opts =>
             {
                 opts.SwaggerEndpoint("/swagger/APIDoc/swagger.json", "Comparator Web API");
+                opts.RoutePrefix = "docs/web-api";
             });
 
             app.UseHttpsRedirection();
