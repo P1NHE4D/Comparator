@@ -6,6 +6,22 @@
 
     <ItemGroup>
       <PackageReference Include="NLog" Version="4.7.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\favicon-16x16.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\favicon-32x32.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\index.html" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\oauth2-redirect.html" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui-bundle.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui-bundle.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui-standalone-preset.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui-standalone-preset.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.css.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.js.map" />
     </ItemGroup>
 
 
