@@ -104,6 +104,27 @@ namespace ComparatorTest.Utils.Monads
             Assert.Same(value, result);
             Assert.NotSame(value2, result);
         } 
+        [Fact]
+        public void SuccessMapTest_ShouldIgnoreCatch()
+        {
+            // Arrange
+            const string value = "I am a value";
+            const string value2 = "I am another value";
+            var success = new Success<string>(value);
+            
+            // Act
+            var result = success.Catch(m =>
+            {
+                // Assert
+                Assert.Equal(0, 1);
+                return value2;
+            });
+            
+            // Assert
+            Assert.Same(value, result);
+            Assert.NotSame(value2, result);
+        } 
+        
         
         
         [Fact]
@@ -157,7 +178,7 @@ namespace ComparatorTest.Utils.Monads
         } 
         
         [Fact]
-        public void FailureMapTest_ShouldReturnDefault()
+        public void FailureMapTest_ShouldFireCatch()
         {
             // Arrange
             const string message = "I am a value";
@@ -165,7 +186,12 @@ namespace ComparatorTest.Utils.Monads
             var success = new Failure<string>(message);
             
             // Act
-            var result = success.Return(value2);
+            var result = success.Catch(m =>
+            {
+                // Assert
+                Assert.Same(message, m);
+                return value2;
+            });
             
             // Assert
             Assert.NotSame(message, result);
