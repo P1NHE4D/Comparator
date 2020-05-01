@@ -7,6 +7,8 @@ namespace Comparator.Utils.Monads
         public abstract Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func);
 
         public abstract Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func);
+        
+        // TODO Add Catch function
 
         public abstract T Return(T defaultValue);
     }
