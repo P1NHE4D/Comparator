@@ -1,6 +1,6 @@
 using System;
 
-namespace Comparator
+namespace Comparator.Models
 {
     public class WeatherForecast
     {
