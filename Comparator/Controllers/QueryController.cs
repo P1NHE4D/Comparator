@@ -40,6 +40,7 @@ namespace Comparator.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromBody] Query query)
         {
+            // TODO: send query to kibana and process data using IBM watson
             var clientIp = Request.HttpContext.Connection.RemoteIpAddress;
             _logger.LogInfo($"Query received from {clientIp}: {query.Keywords}");
             SampleData.Query = query;
