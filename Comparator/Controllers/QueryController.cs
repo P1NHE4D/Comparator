@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Comparator.Models;
 using Comparator.Utils.Logger;
 using Microsoft.AspNetCore.Http;
@@ -32,15 +31,14 @@ namespace Comparator.Controllers
         /// </remarks>
         /// <param name="query"></param>
         /// <returns>JSON object containing query results</returns>
-        /// <response code="200">Returns a JSON object containing QueryResults</response>
+        /// <response code="200">Returns a JSON object containing the QueryResult</response>
         /// <response code="400">Invalid query</response>
         [HttpPost]
-        [Route("query")]
         [Produces("application/json")]
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<QueryResult>> SendQuery([FromBody] Query query)
+        public ActionResult<QueryResult> SendQuery([FromBody] Query query)
         {
             var clientIp = Request.HttpContext.Connection.RemoteIpAddress;
             _logger.LogInfo($"Query received from {clientIp}: {query.Keywords}");
