@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Comparator.Utils.Monads;
@@ -7,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Comparator.OutgoingConnection
 {
+    [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     public class HttpRequestSender : IHttpRequestSender
     {
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
@@ -25,8 +28,12 @@ namespace Comparator.OutgoingConnection
         {
             try
             {
-                var response = await _client.GetStringAsync(path);
-                return new Success<string>(response);
+                return await _client.GetAsync(path).Bind(async getContent =>
+                {
+                    if (getContent.StatusCode == HttpStatusCode.Accepted)
+                        return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode})");
+                });
             }
             catch (Exception e)
             {
@@ -41,18 +48,21 @@ namespace Comparator.OutgoingConnection
                    select JsonConvert.DeserializeObject<TReturn>(value);
         }
         
-        public Task<Capsule<string>> PostAsString(string path, object content)
+        public async Task<Capsule<string>> PostAsString(string path, object content)
         {
             try
             {
-                var postContent = new StringContent(JsonConvert.SerializeObject(content));
-                return from response in _client.PostAsync(path, postContent)
-                       from responseContent in response.Content.ReadAsStringAsync()
-                       select Capsule<string>.CreateSuccess(responseContent);
+                var postContent = new StringContent(JsonConvert.SerializeObject(content));    
+                return await _client.PostAsync(path, postContent).Bind(async getContent =>
+                {
+                    if (getContent.StatusCode == HttpStatusCode.Accepted)
+                        return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode})");
+                });
             }
             catch (Exception e)
             {
-                return new Task<Capsule<string>>(() => Capsule<string>.CreateFailure(e.Message));
+                return Capsule<string>.CreateFailure(e.Message);
             }
         }
         
