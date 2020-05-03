@@ -9,29 +9,15 @@ using Newtonsoft.Json;
 
 namespace Comparator.Services
 {
-    /// <summary>
-    /// Service ir outgoing connections 
-    /// </summary>
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     public class HttpRequestSender : IHttpRequestSender
     {
-        /// <summary>
-        /// Dictionary for storing HttpClients
-        /// </summary>
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
         public HttpRequestSender()
         {
         }
-
-        /// <summary>
-        /// Used to get an instance of HttpClient
-        /// </summary>
-        /// <param name="baseUri">baseUri</param>
-        /// <returns>instance of HttpClient</returns>
+        
         private HttpClient GetHttpClient(string baseUri)
         {
             if (Clients.TryGetValue(baseUri, out var client)) return client;
