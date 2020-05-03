@@ -7,28 +7,33 @@ using System.Threading.Tasks;
 using Comparator.Utils.Monads;
 using Newtonsoft.Json;
 
-namespace Comparator.OutgoingConnection
+namespace Comparator.Services
 {
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     public class HttpRequestSender : IHttpRequestSender
     {
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
 
-        private readonly HttpClient _client;
-
-        public HttpRequestSender(string baseUri)
+        public HttpRequestSender()
         {
-            if (Clients.TryGetValue(baseUri, out _client)) return;
-            
-            _client = new HttpClient {BaseAddress = new Uri(baseUri)};
-            Clients[baseUri] = _client;
         }
 
-        public async Task<Capsule<string>> GetAsString(string path)
+        private HttpClient GetHttpClient(string baseUri)
+        {
+            if (Clients.TryGetValue(baseUri, out var client)) return client;
+            
+            client = new HttpClient {BaseAddress = new Uri(baseUri)};
+            Clients[baseUri] = client;
+            return client;
+        }
+
+        public async Task<Capsule<string>> GetAsString(string baseUri, string path)
         {
             try
             {
-                return await _client.GetAsync(path).Bind(async getContent =>
+                return await GetHttpClient(baseUri)
+                    .GetAsync(path)
+                    .Bind(async getContent =>
                 {
                     if (getContent.StatusCode == HttpStatusCode.Accepted)
                         return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
@@ -41,19 +46,21 @@ namespace Comparator.OutgoingConnection
             }
         }
         
-        public Task<Capsule<TReturn>> GetAs<TReturn>(string path)
+        public Task<Capsule<TReturn>> GetAs<TReturn>(string baseUri, string path)
         {
-            return from response in GetAsString(path)
+            return from response in GetAsString(baseUri, path)
                    from value in response
                    select JsonConvert.DeserializeObject<TReturn>(value);
         }
         
-        public async Task<Capsule<string>> PostAsString(string path, object content)
+        public async Task<Capsule<string>> PostAsString(string baseUri, string path, object content)
         {
             try
             {
                 var postContent = new StringContent(JsonConvert.SerializeObject(content));    
-                return await _client.PostAsync(path, postContent).Bind(async getContent =>
+                return await GetHttpClient(baseUri)
+                    .PostAsync(path, postContent)
+                    .Bind(async getContent =>
                 {
                     if (getContent.StatusCode == HttpStatusCode.Accepted)
                         return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
@@ -66,9 +73,9 @@ namespace Comparator.OutgoingConnection
             }
         }
         
-        public Task<Capsule<TReturn>> PostAs<TReturn>(string path, object content)
+        public Task<Capsule<TReturn>> PostAs<TReturn>(string baseUri, string path, object content)
         {
-            return from responseContentCapsule in PostAsString(path, content)
+            return from responseContentCapsule in PostAsString(baseUri, path, content)
                    from responseContent in responseContentCapsule
                    select JsonConvert.DeserializeObject<TReturn>(responseContent);
         }
