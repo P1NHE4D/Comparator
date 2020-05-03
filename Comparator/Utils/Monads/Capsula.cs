@@ -9,6 +9,17 @@ namespace Comparator.Utils.Monads
         public abstract Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func);
         public abstract T Catch(Func<string, T> func);
         public abstract T Return(T defaultValue);
+
+        public static Capsule<T> CreateSuccess(T value) => new Success<T>(value);
+        public static Capsule<T> CreateFailure(string message) => new Failure<T>(message);
+        public Capsule<TResult> SelectMany<TValue2, TResult>(
+            Func<T, Capsule<TValue2>> function,
+            Func<T, TValue2, TResult> projection)
+        {
+            return Bind(
+                outer => function(outer).Bind(
+                    inner => new Success<TResult>(projection(outer, inner))));
+        }
     }
 
     public sealed class Success<T> : Capsule<T>
