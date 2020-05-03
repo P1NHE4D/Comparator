@@ -1,3 +1,4 @@
+using Comparator.Services;
 using Comparator.Utils.Logger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -22,6 +23,11 @@ namespace Comparator.Utils.Extensions
                     Description = "Comparator Web API Documentation"
                 });
             });
+        }
+        
+        public static void ConfigureHttpRequestSender(this IServiceCollection services)
+        {
+            services.AddSingleton<IHttpRequestSender, HttpRequestSender>();
         }
     }
 }

@@ -29,6 +29,7 @@ namespace Comparator
         {
             services.ConfigureLoggerService();
             services.ConfigureSwagger();
+            services.ConfigureHttpRequestSender();
             services.AddControllers();
         }
 
