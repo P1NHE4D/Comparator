@@ -9,9 +9,15 @@ using Newtonsoft.Json;
 
 namespace Comparator.Services
 {
+    /// <summary>
+    /// Service ir outgoing connections 
+    /// </summary>
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     public class HttpRequestSender : IHttpRequestSender
     {
+        /// <summary>
+        /// Dictionary for storing HttpClients
+        /// </summary>
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
 
         /// <summary>
@@ -47,11 +53,11 @@ namespace Comparator.Services
             {
                 return await GetHttpClient(baseUri)
                     .GetAsync(path)
-                    .Bind(async getContent =>
+                    .Bind(async response =>
                 {
-                    if (getContent.StatusCode == HttpStatusCode.Accepted)
-                        return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
-                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode}, URI: {baseUri + path})");
+                    if (response.StatusCode == HttpStatusCode.Accepted)
+                        return Capsule<string>.CreateSuccess(await response.Content.ReadAsStringAsync());
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})");
                 });
             }
             catch (Exception e)
@@ -86,11 +92,11 @@ namespace Comparator.Services
                 var postContent = new StringContent(JsonConvert.SerializeObject(content));    
                 return await GetHttpClient(baseUri)
                     .PostAsync(path, postContent)
-                    .Bind(async getContent =>
+                    .Bind(async response =>
                 {
-                    if (getContent.StatusCode == HttpStatusCode.Accepted)
-                        return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
-                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode}, URI: {baseUri + path})");
+                    if (response.StatusCode == HttpStatusCode.Accepted)
+                        return Capsule<string>.CreateSuccess(await response.Content.ReadAsStringAsync());
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})");
                 });
             }
             catch (Exception e)
