@@ -1,10 +1,8 @@
 using System;
 using Comparator.Utils.Logger;
 
-namespace Comparator.Utils.Monads
-{
-    public abstract class Capsule<T>
-    {
+namespace Comparator.Utils.Monads {
+    public abstract class Capsule<T> {
         public abstract Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func);
         public abstract Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func);
         public abstract T Catch(Func<string, T> func);
@@ -12,18 +10,17 @@ namespace Comparator.Utils.Monads
 
         public static Capsule<T> CreateSuccess(T value) => new Success<T>(value);
         public static Capsule<T> CreateFailure(string message) => new Failure<T>(message);
+
         public Capsule<TResult> SelectMany<TValue2, TResult>(
             Func<T, Capsule<TValue2>> function,
-            Func<T, TValue2, TResult> projection)
-        {
+            Func<T, TValue2, TResult> projection) {
             return Bind(
                 outer => function(outer).Bind(
                     inner => new Success<TResult>(projection(outer, inner))));
         }
     }
 
-    public sealed class Success<T> : Capsule<T>
-    {
+    public sealed class Success<T> : Capsule<T> {
         private readonly T _value;
 
         public Success(T value) => _value = value;
@@ -37,15 +34,15 @@ namespace Comparator.Utils.Monads
         public override T Return(T defaultValue) => _value;
     }
 
-    public sealed class Failure<T> : Capsule<T>
-    {
+    public sealed class Failure<T> : Capsule<T> {
         private readonly string _message;
 
         public Failure(string message) => _message = message;
 
         public Failure(string message, ILoggerManager logger) : this(message) => logger.LogError(message);
 
-        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func) => new Failure<TReturn>(_message);
+        public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func) =>
+            new Failure<TReturn>(_message);
 
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Failure<TReturn>(_message);
 

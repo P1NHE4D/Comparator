@@ -4,22 +4,18 @@ using Comparator.Utils.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Comparator.Controllers
-{
+namespace Comparator.Controllers {
     [ApiController]
     [Route("api")]
-    public class QueryController : ControllerBase
-    {
+    public class QueryController : ControllerBase {
         private readonly ILoggerManager _logger;
 
-        private static QueryResult SampleData = new QueryResult
-        {
+        private static QueryResult SampleData = new QueryResult {
             ProcessedDataSets = 10734,
             ComputationTime = TimeSpan.FromHours(2.0).TotalSeconds
         };
 
-        public QueryController(ILoggerManager logger)
-        {
+        public QueryController(ILoggerManager logger) {
             _logger = logger;
         }
 
@@ -38,8 +34,7 @@ namespace Comparator.Controllers
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<QueryResult> SendQuery([FromBody] Query query)
-        {
+        public ActionResult<QueryResult> SendQuery([FromBody] Query query) {
             // TODO: send query to Kibana and process data using IBM watson
             var clientIp = Request.HttpContext.Connection.RemoteIpAddress;
             _logger.LogInfo($"Query received from {clientIp}: {query.Keywords}");
