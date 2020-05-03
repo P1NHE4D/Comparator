@@ -14,10 +14,18 @@ namespace Comparator.Services
     {
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public HttpRequestSender()
         {
         }
 
+        /// <summary>
+        /// Used to get an instance of HttpClient
+        /// </summary>
+        /// <param name="baseUri">baseUri</param>
+        /// <returns>instance of HttpClient</returns>
         private HttpClient GetHttpClient(string baseUri)
         {
             if (Clients.TryGetValue(baseUri, out var client)) return client;
@@ -27,6 +35,12 @@ namespace Comparator.Services
             return client;
         }
 
+        /// <summary>
+        /// Sends a GET request and returns the response as string
+        /// </summary>
+        /// <param name="baseUri">the essential part of the uri</param>
+        /// <param name="path">the other part</param>
+        /// <returns>result</returns>
         public async Task<Capsule<string>> GetAsString(string baseUri, string path)
         {
             try
@@ -37,7 +51,7 @@ namespace Comparator.Services
                 {
                     if (getContent.StatusCode == HttpStatusCode.Accepted)
                         return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
-                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode})");
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode}, URI: {baseUri + path})");
                 });
             }
             catch (Exception e)
@@ -46,6 +60,12 @@ namespace Comparator.Services
             }
         }
         
+        /// <summary>
+        /// Sends a GET request and returns the response as an object
+        /// </summary>
+        /// <param name="baseUri">the essential part of the uri</param>
+        /// <param name="path">the other part</param>
+        /// <returns>result</returns>
         public Task<Capsule<TReturn>> GetAs<TReturn>(string baseUri, string path)
         {
             return from response in GetAsString(baseUri, path)
@@ -53,6 +73,12 @@ namespace Comparator.Services
                    select JsonConvert.DeserializeObject<TReturn>(value);
         }
         
+        /// <summary>
+        /// Sends a POST request and returns the response as a string
+        /// </summary>
+        /// <param name="baseUri">the essential part of the uri</param>
+        /// <param name="path">the other part</param>
+        /// <returns>result</returns>
         public async Task<Capsule<string>> PostAsString(string baseUri, string path, object content)
         {
             try
@@ -64,7 +90,7 @@ namespace Comparator.Services
                 {
                     if (getContent.StatusCode == HttpStatusCode.Accepted)
                         return Capsule<string>.CreateSuccess(await getContent.Content.ReadAsStringAsync());
-                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode})");
+                    return Capsule<string>.CreateFailure($"Request failed! (StatusCode: {getContent.StatusCode}, URI: {baseUri + path})");
                 });
             }
             catch (Exception e)
@@ -73,6 +99,12 @@ namespace Comparator.Services
             }
         }
         
+        /// <summary>
+        /// Sends a POST request and returns the response as an object
+        /// </summary>
+        /// <param name="baseUri">the essential part of the uri</param>
+        /// <param name="path">the other part</param>
+        /// <returns>result</returns>
         public Task<Capsule<TReturn>> PostAs<TReturn>(string baseUri, string path, object content)
         {
             return from responseContentCapsule in PostAsString(baseUri, path, content)
