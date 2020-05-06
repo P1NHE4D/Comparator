@@ -35,7 +35,7 @@ pipeline {
             when { branch 'master' }
             steps {
                 sh "dotnet publish --configuration Release --output /srv/comparator"
-                sh "systemctl restart comparator.service"
+                sh "sudo systemctl restart comparator.service"
             }
         }
     }
