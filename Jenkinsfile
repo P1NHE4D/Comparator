@@ -30,5 +30,13 @@ pipeline {
                 step([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
             }
         }
+        if(env.BRANCH_NAME == 'master') {
+            stage('Deploy') {
+                steps {
+                    sh "dotnet publish --configuration Release --output /srv/comparator"
+                    sh "systemctl restart comparator.service"
+                }
+            }
+        }
     }
 }
