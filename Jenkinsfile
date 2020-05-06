@@ -32,11 +32,10 @@ pipeline {
         }
         
         stage('Deploy') {
-            if(env.BRANCH_NAME == 'master') {
-                steps {
-                    sh "dotnet publish --configuration Release --output /srv/comparator"
-                    sh "systemctl restart comparator.service"
-                }
+            when { branch 'master' }
+            steps {
+                sh "dotnet publish --configuration Release --output /srv/comparator"
+                sh "systemctl restart comparator.service"
             }
         }
     }
