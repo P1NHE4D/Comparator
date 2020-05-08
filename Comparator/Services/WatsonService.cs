@@ -24,9 +24,10 @@ namespace Comparator.Services {
         /// </summary>
         /// <param name="text">text to be analysed</param>
         /// <param name="features">feature object containing the selected options</param>
+        /// <param name="language">sets the language of the text to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
-        public Capsule<AnalysisResults> AnalyseText(string text, Features features) {
-            var result = _nluService.Analyze(features, text: text);
+        public Capsule<AnalysisResults> AnalyseText(string text, Features features, string language = "en") {
+            var result = _nluService.Analyze(features, text: text, language: language);
 
             if (result.StatusCode != StatusCodes.Status200OK) {
                 return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
@@ -40,9 +41,10 @@ namespace Comparator.Services {
         /// <param name="url">text to be analysed</param>
         /// <param name="features">feature object containing the selected options</param>
         /// <param name="clean">disables webpage cleansing</param>
+        /// <param name="language">sets the language of the webpage to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
-        public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = true) {
-            var result = _nluService.Analyze(features, url: url, clean: clean);
+        public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = true, string language = "en") {
+            var result = _nluService.Analyze(features, url: url, clean: clean, language: language);
 
             if (result.StatusCode != StatusCodes.Status200OK) {
                 return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
@@ -56,9 +58,10 @@ namespace Comparator.Services {
         /// <param name="html">text to be analysed</param>
         /// <param name="features">feature object containing the selected options</param>
         /// <param name="clean">disables webpage cleansing</param>
+        /// <param name="language">sets the language of the html to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
-        public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = true) {
-            var result = _nluService.Analyze(features, html: html, clean: clean);
+        public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = true, string language = "en") {
+            var result = _nluService.Analyze(features, html: html, clean: clean, language: language);
 
             if (result.StatusCode != StatusCodes.Status200OK) {
                 return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
