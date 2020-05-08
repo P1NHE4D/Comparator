@@ -29,7 +29,7 @@ namespace Comparator.Services {
             var result = _nluService.Analyze(features);
 
             if (result.StatusCode != StatusCodes.Status200OK) {
-                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Request to Watson failed", _logger);
+                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Nlu analysis failed", _logger);
             }
 
             return new Success<AnalysisResults>(result.Result);
