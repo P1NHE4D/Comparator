@@ -18,20 +18,51 @@ namespace Comparator.Services {
             _nluService.SetServiceUrl(
                 "");
         }
-
+        
         /// <summary>
-        /// Performs a natural language understanding analysis using IBM Watson's natural
-        /// language understanding service
+        /// Performs a natural language analysis of the text passed as an argument
         /// </summary>
-        /// <param name="features">Feature object containing information about the analysis to be performed</param>
-        /// <returns>Returns a capsule containing an AnalysisResults object</returns>
-        public Capsule<AnalysisResults> PerformNluAnalysis(Features features) {
-            var result = _nluService.Analyze(features);
+        /// <param name="text">text to be analysed</param>
+        /// <param name="features">feature object containing the selected options</param>
+        /// <returns>returns a capsule containing AnalysisResults object</returns>
+        public Capsule<AnalysisResults> AnalyseText(string text, Features features) {
+            var result = _nluService.Analyze(features, text: text);
 
             if (result.StatusCode != StatusCodes.Status200OK) {
-                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Nlu analysis failed", _logger);
+                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
             }
+            return new Success<AnalysisResults>(result.Result);
+        }
 
+        /// <summary>
+        /// Performs a natural language analysis of the text passed as an argument
+        /// </summary>
+        /// <param name="url">text to be analysed</param>
+        /// <param name="features">feature object containing the selected options</param>
+        /// <param name="clean">disables webpage cleansing</param>
+        /// <returns>returns a capsule containing AnalysisResults object</returns>
+        public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = true) {
+            var result = _nluService.Analyze(features, url: url, clean: clean);
+
+            if (result.StatusCode != StatusCodes.Status200OK) {
+                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
+            }
+            return new Success<AnalysisResults>(result.Result);
+        }
+
+        /// <summary>
+        /// Performs a natural language analysis of the text passed as an argument
+        /// </summary>
+        /// <param name="html">text to be analysed</param>
+        /// <param name="features">feature object containing the selected options</param>
+        /// <param name="clean">disables webpage cleansing</param>
+        /// <returns>returns a capsule containing AnalysisResults object</returns>
+        public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = true) {
+            var result = _nluService.Analyze(features, html: html, clean: clean);
+
+            if (result.StatusCode != StatusCodes.Status200OK) {
+                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
+            }
             return new Success<AnalysisResults>(result.Result);
         }
     }
