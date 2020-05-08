@@ -1,3 +1,4 @@
+using System;
 using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using IBM.Cloud.SDK.Core.Authentication.Iam;
@@ -14,7 +15,7 @@ namespace Comparator.Services {
             //TODO: fetch apikey and url from config file
             _logger = logger;
             var authenticator = new IamAuthenticator(apikey: "");
-            _nluService = new NaturalLanguageUnderstandingService("1.0", authenticator);
+            _nluService = new NaturalLanguageUnderstandingService("2020-05-01", authenticator);
             _nluService.SetServiceUrl(
                 "");
         }
@@ -27,12 +28,17 @@ namespace Comparator.Services {
         /// <param name="language">sets the language of the text to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
         public Capsule<AnalysisResults> AnalyseText(string text, Features features, string language = "en") {
-            var result = _nluService.Analyze(features, text: text, language: language);
-
-            if (result.StatusCode != StatusCodes.Status200OK) {
-                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
+            try {
+                var result = _nluService.Analyze(features, text: text, language: language);
+                if (result.StatusCode != StatusCodes.Status200OK) {
+                    return new Failure<AnalysisResults>($"Status code: {result.StatusCode}. Invalid request.", _logger);
+                }
+                return new Success<AnalysisResults>(result.Result);
             }
-            return new Success<AnalysisResults>(result.Result);
+            catch (Exception e) {
+                _logger.LogError(e.Message);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.");
+            }
         }
 
         /// <summary>
@@ -44,12 +50,19 @@ namespace Comparator.Services {
         /// <param name="language">sets the language of the webpage to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
         public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = true, string language = "en") {
-            var result = _nluService.Analyze(features, url: url, clean: clean, language: language);
+            try {
+                var result = _nluService.Analyze(features, url: url, clean: clean, language: language);
 
-            if (result.StatusCode != StatusCodes.Status200OK) {
-                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
+                if (result.StatusCode != StatusCodes.Status200OK) {
+                    return new Failure<AnalysisResults>($"Status code: {result.StatusCode}. Invalid request.", _logger);
+                }
+                return new Success<AnalysisResults>(result.Result);
             }
-            return new Success<AnalysisResults>(result.Result);
+            catch (Exception e) {
+                _logger.LogError(e.Message);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.");
+            }
+
         }
 
         /// <summary>
@@ -61,12 +74,20 @@ namespace Comparator.Services {
         /// <param name="language">sets the language of the html to be analysed according to the ISO 639-1 standard</param>
         /// <returns>returns a capsule containing AnalysisResults object</returns>
         public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = true, string language = "en") {
-            var result = _nluService.Analyze(features, html: html, clean: clean, language: language);
+            try {
+                var result = _nluService.Analyze(features, html: html, clean: clean, language: language);
 
-            if (result.StatusCode != StatusCodes.Status200OK) {
-                return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed", _logger);
+                if (result.StatusCode != StatusCodes.Status200OK) {
+                    return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed",
+                                                        _logger);
+                }
+
+                return new Success<AnalysisResults>(result.Result);
             }
-            return new Success<AnalysisResults>(result.Result);
+            catch (Exception e) {
+                _logger.LogError(e.Message);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.");
+            }
         }
     }
 }
