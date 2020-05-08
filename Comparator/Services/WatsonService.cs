@@ -81,7 +81,6 @@ namespace Comparator.Services {
                     return new Failure<AnalysisResults>($"Status code: {result.StatusCode} Text analysis failed",
                                                         _logger);
                 }
-
                 return new Success<AnalysisResults>(result.Result);
             }
             catch (Exception e) {
