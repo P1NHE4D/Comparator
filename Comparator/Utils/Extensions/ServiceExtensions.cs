@@ -22,5 +22,9 @@ namespace Comparator.Utils.Extensions {
         public static void ConfigureHttpRequestSender(this IServiceCollection services) {
             services.AddSingleton<IHttpRequestSender, HttpRequestSender>();
         }
+
+        public static void ConfigureWatsonService(this IServiceCollection services) {
+            services.AddSingleton<IWatsonService, WatsonService>();
+        }
     }
 }
