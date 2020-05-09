@@ -1,6 +1,8 @@
 using System;
 using Comparator.Models;
+using Comparator.Services;
 using Comparator.Utils.Logger;
+using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,14 +11,16 @@ namespace Comparator.Controllers {
     [Route("api")]
     public class QueryController : ControllerBase {
         private readonly ILoggerManager _logger;
+        private readonly IDataAnalyser _dataAnalyser;
 
         private static QueryResult SampleData = new QueryResult {
             ProcessedDataSets = 10734,
             ComputationTime = TimeSpan.FromHours(2.0).TotalSeconds
         };
 
-        public QueryController(ILoggerManager logger) {
+        public QueryController(ILoggerManager logger, IDataAnalyser dataAnalyser) {
             _logger = logger;
+            _dataAnalyser = dataAnalyser;
         }
 
         /// <summary>
@@ -35,7 +39,9 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromBody] Query query) {
-            // TODO: send query to Kibana and process data using IBM watson
+            // TODO: send query to DataAnalyser
+            var result = _dataAnalyser.AnalyseQuery(query);
+
             var clientIp = Request.HttpContext.Connection.RemoteIpAddress;
             _logger.LogInfo($"Query received from {clientIp}: {query.Keywords}");
             SampleData.Query = query;

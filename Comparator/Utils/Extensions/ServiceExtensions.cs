@@ -23,8 +23,16 @@ namespace Comparator.Utils.Extensions {
             services.AddSingleton<IHttpRequestSender, HttpRequestSender>();
         }
 
+        public static void ConfigureKibanaService(this IServiceCollection services) {
+            services.AddSingleton<IKibanaService, KibanaService>();
+        }
+
         public static void ConfigureWatsonService(this IServiceCollection services) {
             services.AddSingleton<IWatsonService, WatsonService>();
+        }
+
+        public static void ConfigureDataAnalyser(this IServiceCollection services) {
+            services.AddSingleton<IDataAnalyser, DataAnalyser>();
         }
     }
 }
