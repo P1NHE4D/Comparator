@@ -8,8 +8,7 @@ namespace Comparator.Services {
     public class ConfigurationLoader : IConfigurationLoader {
         // Watson
         public Capsule<string> WatsonUrl => Config.Map(r => r["watson"]["url"].ToString());
-        public Capsule<string> WatsonUser => Config.Map(r => r["watson"]["user"].ToString());
-        public Capsule<string> WatsonPassword => Config.Map(r => r["watson"]["password"].ToString());
+        public Capsule<string> WatsonAPI => Config.Map(r => r["watson"]["api"].ToString());
         
         // Kibana
         public Capsule<string> KibanaUrl => Config.Map(r => r["kibana"]["url"].ToString());
