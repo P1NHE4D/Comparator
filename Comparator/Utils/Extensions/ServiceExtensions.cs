@@ -25,6 +25,8 @@ namespace Comparator.Utils.Extensions {
 
         public static void ConfigureConfigurationLoader(this IServiceCollection services) {
             services.AddSingleton<IConfigurationLoader, ConfigurationLoader>();
+        }
+
         public static void ConfigureKibanaService(this IServiceCollection services) {
             services.AddSingleton<IKibanaService, KibanaService>();
         }
