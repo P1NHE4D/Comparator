@@ -1,7 +1,7 @@
 ﻿using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
-    public interface IConfigurationLoader {
+    public interface IConfigLoader {
         Capsule<string> WatsonUrl { get; }
         Capsule<string> WatsonApiKey { get; }
         Capsule<string> KibanaUrl { get; }
