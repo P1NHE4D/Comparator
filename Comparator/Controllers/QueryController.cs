@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Comparator.Models;
 using Comparator.Services;
 using Comparator.Utils.Logger;
-using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
