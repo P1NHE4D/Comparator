@@ -23,7 +23,7 @@ namespace Comparator.Utils.Extensions {
             services.AddSingleton<IHttpRequestSender, HttpRequestSender>();
         }
 
-        public static void ConfigureConfigurationLoader(this IServiceCollection services) {
+        public static void ConfigureConfigLoader(this IServiceCollection services) {
             services.AddSingleton<IConfigLoader, ConfigLoader>();
         }
 

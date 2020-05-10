@@ -28,7 +28,6 @@ namespace Comparator.Services {
             catch (Exception e) {
                 _config = new Failure<JObject>(FExistsErr);
             }
-
         }
     }
 }

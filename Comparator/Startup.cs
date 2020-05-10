@@ -28,7 +28,7 @@ namespace Comparator {
             services.ConfigureLoggerService();
             services.ConfigureSwagger();
             services.ConfigureHttpRequestSender();
-            services.ConfigureConfigurationLoader();
+            services.ConfigureConfigLoader();
             services.ConfigureKibanaService();
             services.ConfigureWatsonService();
             services.ConfigureDataAnalyser();
