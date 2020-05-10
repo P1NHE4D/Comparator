@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Comparator.Services;
 using Comparator.Utils.Extensions;
 using Comparator.Utils.Logger;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +28,7 @@ namespace Comparator {
             services.ConfigureLoggerService();
             services.ConfigureSwagger();
             services.ConfigureHttpRequestSender();
+            services.ConfigureConfigLoader();
             services.ConfigureKibanaService();
             services.ConfigureWatsonService();
             services.ConfigureDataAnalyser();
