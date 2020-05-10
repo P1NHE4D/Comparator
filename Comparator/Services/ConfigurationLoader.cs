@@ -6,35 +6,30 @@ using Newtonsoft.Json.Linq;
 
 namespace Comparator.Services {
     public class ConfigurationLoader : IConfigurationLoader {
-        public Capsule<string> KibanaUsername { get; }
-        public Capsule<string> KibanaPassword { get; }
-        public Capsule<string> WatsonUsername { get; }
-        public Capsule<string> WatsonPassword { get; }
-        private const string FExistsErr = "Error loading config: configuration file not found";
+        // Watson
+        public Capsule<string> GetWatsonUrl => Config.Map(r => r["watson"]["url"].ToString());
+        public Capsule<string> GetWatsonUser => Config.Map(r => r["watson"]["user"].ToString());
+        public Capsule<string> GetWatsonPassword => Config.Map(r => r["watson"]["password"].ToString());
+        
+        // Kibana
+        public Capsule<string> GetKibanaUrl => Config.Map(r => r["kibana"]["url"].ToString());
+        public Capsule<string> GetKibanaUser => Config.Map(r => r["kibana"]["user"].ToString());
+        public Capsule<string> GetKibanaPassword => Config.Map(r => r["kibana"]["password"].ToString());
+        
+        
+        private Capsule<JObject> Config;
+        private const string FExistsErr = "Error loading config: configuration file not found or could not be read.";
 
         public ConfigurationLoader() {
             const string filepath = "config.json";
-            if (!File.Exists(filepath)) {
-                this.KibanaUsername = new Failure<string>(FExistsErr);
-                this.KibanaPassword = new Failure<string>(FExistsErr);
-                this.WatsonUsername = new Failure<string>(FExistsErr);
-                this.WatsonPassword = new Failure<string>(FExistsErr);
-            }
-            else {
+            try {
                 var rawJson = File.ReadAllText(filepath);
-                ConfigurationJson jsonObj = JsonSerializer.Deserialize<ConfigurationJson>(rawJson);
-
-                this.KibanaUsername = new Success<string>(jsonObj.KibanaUsername);
-                this.KibanaPassword = new Success<string>(jsonObj.KibanaPassword);
-                this.WatsonUsername = new Success<string>(jsonObj.WatsonUsername); 
-                this.WatsonPassword = new Success<string>(jsonObj.WatsonPassword);
+                Config = new Success<JObject>(JObject.Parse(rawJson));
             }
-        }
-        private class ConfigurationJson {
-            public string KibanaUsername { get; set; }
-            public string KibanaPassword { get; set; }
-            public string WatsonUsername { get; set; }
-            public string WatsonPassword { get; set; }
+            catch (Exception e) {
+                Config = new Failure<JObject>(FExistsErr);
+            }
+
         }
     }
 }
