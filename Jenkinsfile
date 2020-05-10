@@ -34,6 +34,7 @@ pipeline {
         stage('Deploy') {
             when { branch 'master' }
             steps {
+                sh "sudo systemctl stop comparator.service"
                 sh "dotnet publish --configuration Release --output /srv/comparator"
                 sh "sudo systemctl restart comparator.service"
             }
