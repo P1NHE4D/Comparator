@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Comparator.Models;
-using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 
@@ -22,6 +19,7 @@ namespace Comparator.Services {
         /// <param name="query">Query object containing information about the query</param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
         public Capsule<QueryResult> AnalyseQuery(Query query) {
+
             var features = new Features() {
                 Categories =  new CategoriesOptions() { },
                 //Concepts = new ConceptsOptions() {},
@@ -38,9 +36,17 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() {}
             };
             
+            var result = new QueryResult();
+
             return _kibana.FetchData(query.Keywords)
-                          .Bind(d => _watson.AnalyseText(d, features))
-                          .Bind(ar => new Success<QueryResult>(new QueryResult() {Results = ar}));
+                          .Bind(d => {
+                              result.ProcessedDataSets = d.Count;
+                              return _watson.AnalyseText(d.Data, features);
+                          })
+                          .Bind(ar => {
+                              result.Results = ar;
+                              return new Success<QueryResult>(result);
+                          });
         }
     }
 }

@@ -14,11 +14,6 @@ namespace Comparator.Controllers {
         private readonly ILoggerManager _logger;
         private readonly IDataAnalyser _dataAnalyser;
 
-        private static QueryResult SampleData = new QueryResult {
-            ProcessedDataSets = 10734,
-            ComputationTime = TimeSpan.FromHours(2.0).TotalSeconds
-        };
-
         public QueryController(ILoggerManager logger, IDataAnalyser dataAnalyser) {
             _logger = logger;
             _dataAnalyser = dataAnalyser;
@@ -40,13 +35,17 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromBody] Query query) {
-            // TODO: send query to DataAnalyser
-            var result = _dataAnalyser.AnalyseQuery(query);
-            
-            var clientIp = Request.HttpContext.Connection.RemoteIpAddress;
-            _logger.LogInfo($"Query received from {clientIp}: {query.Keywords}");
-            SampleData.Query = query;
-            return Ok(SampleData);
+            var demoQuery = new Query() {
+                Keywords = query.Keywords
+            };
+            return _dataAnalyser.AnalyseQuery(demoQuery)
+                                .Map(r => (ActionResult)Ok(r))
+                                .Catch(e => {
+                                    _logger.LogError(e);
+                                    return BadRequest(new QueryResult() {
+                                        Message = e
+                                    });
+                                });
         }
 
         /// <summary>
