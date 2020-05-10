@@ -7,14 +7,14 @@ using Newtonsoft.Json.Linq;
 namespace Comparator.Services {
     public class ConfigurationLoader : IConfigurationLoader {
         // Watson
-        public Capsule<string> GetWatsonUrl => Config.Map(r => r["watson"]["url"].ToString());
-        public Capsule<string> GetWatsonUser => Config.Map(r => r["watson"]["user"].ToString());
-        public Capsule<string> GetWatsonPassword => Config.Map(r => r["watson"]["password"].ToString());
+        public Capsule<string> WatsonUrl => Config.Map(r => r["watson"]["url"].ToString());
+        public Capsule<string> WatsonUser => Config.Map(r => r["watson"]["user"].ToString());
+        public Capsule<string> WatsonPassword => Config.Map(r => r["watson"]["password"].ToString());
         
         // Kibana
-        public Capsule<string> GetKibanaUrl => Config.Map(r => r["kibana"]["url"].ToString());
-        public Capsule<string> GetKibanaUser => Config.Map(r => r["kibana"]["user"].ToString());
-        public Capsule<string> GetKibanaPassword => Config.Map(r => r["kibana"]["password"].ToString());
+        public Capsule<string> KibanaUrl => Config.Map(r => r["kibana"]["url"].ToString());
+        public Capsule<string> KibanaUser => Config.Map(r => r["kibana"]["user"].ToString());
+        public Capsule<string> KibanaPassword => Config.Map(r => r["kibana"]["password"].ToString());
         
         
         private Capsule<JObject> Config;
