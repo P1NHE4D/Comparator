@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Comparator.Utils.Monads {
     // Unsers
@@ -33,11 +34,37 @@ namespace Comparator.Utils.Monads {
 
 
     // Fremd
-    static class FileIO {
+    class FileIO {
+        private string _value = "hallo";
+    
+    
         public static int OpenFile(string filename) {
             if (filename == "fehler")
                 throw new Exception("Fehler!");
             return 0;
+        }
+
+        public string GetValue() => _value;
+
+        public string Value2 {
+            get {
+                return _value;
+            }
+            set {
+                _value = value;
+            }
+        }
+        
+        public string Value3 { get; set; }
+
+
+        public void Func(FileIO a, FileIO b) {
+            a.Value2 = b.Value2;
+            a.SetValue(b.GetValue());
+        }
+
+        private void SetValue(string getValue) {
+            throw new NotImplementedException();
         }
     }
 }
