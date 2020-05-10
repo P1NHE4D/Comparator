@@ -36,7 +36,7 @@ namespace Comparator.Controllers {
                 Keywords = query.Keywords
             };
             return _dataAnalyser.AnalyseQuery(demoQuery)
-                                .Map(r => (ActionResult)Ok(r))
+                                .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => {
                                     _logger.LogError(e);
                                     return BadRequest(new QueryResult() {
@@ -57,18 +57,17 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> DemoQuery() {
-            
             var demoQuery = new Query() {
                 Keywords = "Windows Linux"
             };
             return _dataAnalyser.AnalyseQuery(demoQuery)
-                                       .Map(r => (ActionResult)Ok(r))
-                                       .Catch(e => {
-                                           _logger.LogError(e);
-                                           return BadRequest(new QueryResult() {
-                                               Message = e
-                                           });
-                                       });
+                                .Map(r => (ActionResult) Ok(r))
+                                .Catch(e => {
+                                    _logger.LogError(e);
+                                    return BadRequest(new QueryResult() {
+                                        Message = e
+                                    });
+                                });
         }
     }
 }

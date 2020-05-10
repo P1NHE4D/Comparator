@@ -12,16 +12,15 @@ namespace Comparator.Services {
             _kibana = kibana;
             _watson = watson;
         }
-        
+
         /// <summary>
         /// Analyses the query using Kibana and Watson
         /// </summary>
         /// <param name="query">Query object containing information about the query</param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
         public Capsule<QueryResult> AnalyseQuery(Query query) {
-
             var features = new Features() {
-                Categories =  new CategoriesOptions() { },
+                Categories = new CategoriesOptions() { },
                 //Concepts = new ConceptsOptions() {},
                 Emotion = new EmotionOptions() {
                     Targets = query.Keywords.Split(' ').ToList()
@@ -30,12 +29,12 @@ namespace Comparator.Services {
                     Sentiment = true,
                     Emotion = true,
                     Limit = 3
-                }, 
+                },
                 //Relations =  new RelationsOptions() {},
                 //SemanticRoles = new SemanticRolesOptions() {},
-                Sentiment = new SentimentOptions() {}
+                Sentiment = new SentimentOptions() { }
             };
-            
+
             var result = new QueryResult();
 
             return _kibana.FetchData(query.Keywords)

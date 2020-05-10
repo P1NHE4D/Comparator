@@ -5,11 +5,11 @@ using Comparator.Models;
 using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
-    public class KibanaService : IKibanaService{
-        
+    public class KibanaService : IKibanaService {
         public Capsule<KibanaDataSet> FetchData(string keywords) {
             try {
-                var webRequest = WebRequest.Create("https://www.techrepublic.com/forums/discussions/linux-vs-windows-3/");
+                var webRequest =
+                    WebRequest.Create("https://www.techrepublic.com/forums/discussions/linux-vs-windows-3/");
                 using var response = webRequest.GetResponse();
                 using var content = response.GetResponseStream();
                 using var reader = new StreamReader(content ?? throw new NullReferenceException());
@@ -21,7 +21,6 @@ namespace Comparator.Services {
             catch (Exception e) {
                 return new Failure<KibanaDataSet>("An error occurred");
             }
-
         }
     }
 }
