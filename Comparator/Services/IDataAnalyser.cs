@@ -1,7 +1,8 @@
 using Comparator.Models;
+using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
     public interface IDataAnalyser {
-        QueryResult AnalyseQuery(Query query);
+        Capsule<QueryResult> AnalyseQuery(Query query);
     }
 }
