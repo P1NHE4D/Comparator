@@ -35,17 +35,9 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() { }
             };
 
-            var result = new QueryResult();
-
-            return _kibana.FetchData(query.Keywords)
-                          .Bind(d => {
-                              result.ProcessedDataSets = d.Count;
-                              return _watson.AnalyseText(d.Data, features);
-                          })
-                          .Bind(ar => {
-                              result.Results = ar;
-                              return new Success<QueryResult>(result);
-                          });
+            return from d in _kibana.FetchData(query.Keywords)
+                   from ar in _watson.AnalyseText(d.Data, features)
+                   select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
         }
     }
 }
