@@ -3,6 +3,6 @@ using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
     public interface IDataAnalyser {
-        Capsule<QueryResult> AnalyseQuery(Query query);
+        Capsule<QueryResult> AnalyseQuery(string keywords);
     }
 }

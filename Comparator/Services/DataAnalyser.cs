@@ -16,14 +16,14 @@ namespace Comparator.Services {
         /// <summary>
         /// Analyses the query using Kibana and Watson
         /// </summary>
-        /// <param name="query">Query object containing information about the query</param>
+        /// <param name="keywords">Query object containing information about the query</param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
-        public Capsule<QueryResult> AnalyseQuery(Query query) {
+        public Capsule<QueryResult> AnalyseQuery(string keywords) {
             var features = new Features() {
                 Categories = new CategoriesOptions() { },
                 //Concepts = new ConceptsOptions() {},
                 Emotion = new EmotionOptions() {
-                    Targets = query.Keywords.Split(' ').ToList()
+                    Targets = keywords.Split(' ').ToList()
                 },
                 Keywords = new KeywordsOptions() {
                     Sentiment = true,
@@ -35,7 +35,7 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() { }
             };
 
-            return from d in _kibana.FetchData(query.Keywords)
+            return from d in _kibana.FetchData(keywords)
                    from ar in _watson.AnalyseText(d.Data, features)
                    select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
         }
