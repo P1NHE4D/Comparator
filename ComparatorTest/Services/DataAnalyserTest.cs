@@ -17,10 +17,9 @@ namespace ComparatorTest.Services {
         [Fact]
         public void TestAnalyse() {
             const string keywords = "Test";
-            _analyser.AnalyseQuery(keywords).Bind(innerValue => {
+            _analyser.AnalyseQuery(keywords).Access(innerValue => {
                 Assert.Equal( keywords, innerValue.Results.AnalyzedText);
                 Assert.Equal(5, innerValue.ProcessedDataSets);
-                return new Success<QueryResult>(null);
             });
         }
     }
