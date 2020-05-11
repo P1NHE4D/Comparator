@@ -1,4 +1,5 @@
 using Comparator.Services;
+using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
