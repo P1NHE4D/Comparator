@@ -19,7 +19,7 @@ namespace Comparator.Services {
                 });
             }
             catch (Exception e) {
-                return new Failure<KibanaDataSet>("An error occurred");
+                return new Failure<KibanaDataSet>($"An error occurred {e.Message}");
             }
         }
     }
