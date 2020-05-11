@@ -15,11 +15,10 @@ namespace Comparator.Services {
             //TODO: fetch apikey and url from config file
             _logger = logger;
             _nluService = from apiKey in configLoader.WatsonApiKey
-                          from url in configLoader.WatsonUrl
                           let authenticator = new IamAuthenticator(apiKey)
                           select new NaturalLanguageUnderstandingService("2020-05-01", authenticator);
 
-            _nluService.Access(nlus => nlus.SetServiceUrl("hugobert"));
+            _nluService.Access(nlus => configLoader.WatsonUrl.Access(nlus.SetServiceUrl));
         }
         
         /// <summary>
