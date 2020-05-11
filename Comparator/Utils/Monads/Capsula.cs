@@ -8,8 +8,11 @@ namespace Comparator.Utils.Monads {
         public abstract T Catch(Func<string, T> func);
         public abstract T Return(T defaultValue);
 
+        public abstract Capsule<T> Access(Action<T> action);
+
         public static Capsule<T> CreateSuccess(T value) => new Success<T>(value);
         public static Capsule<T> CreateFailure(string message) => new Failure<T>(message);
+        public static Capsule<T> CreateFailure(string message, ILoggerManager logger) => new Failure<T>(message, logger);
 
         public Capsule<TResult> SelectMany<TValue2, TResult>(
             Func<T, Capsule<TValue2>> function,
@@ -18,6 +21,8 @@ namespace Comparator.Utils.Monads {
                 outer => function(outer).Bind(
                     inner => new Success<TResult>(projection(outer, inner))));
         }
+
+        public Capsule<TReturn> Select<TReturn>(Func<T, TReturn> func) => this.Map(func);
     }
 
     public sealed class Success<T> : Capsule<T> {
@@ -28,6 +33,12 @@ namespace Comparator.Utils.Monads {
         public override Capsule<TReturn> Bind<TReturn>(Func<T, Capsule<TReturn>> func) => func(_value);
 
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Success<TReturn>(func(_value));
+
+
+        public override Capsule<T> Access(Action<T> action) {
+            action(_value);
+            return this;
+        }
 
         public override T Catch(Func<string, T> func) => _value;
 
@@ -45,6 +56,8 @@ namespace Comparator.Utils.Monads {
             new Failure<TReturn>(_message);
 
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Failure<TReturn>(_message);
+        
+        public override Capsule<T> Access(Action<T> action) => this;
 
         public override T Catch(Func<string, T> func) => func(_message);
         public override T Return(T defaultValue) => defaultValue;
