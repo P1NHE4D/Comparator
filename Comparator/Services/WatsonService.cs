@@ -1,4 +1,5 @@
 using System;
+using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using IBM.Cloud.SDK.Core.Authentication.Iam;
@@ -12,7 +13,6 @@ namespace Comparator.Services {
         private readonly Capsule<NaturalLanguageUnderstandingService> _nluService;
 
         public WatsonService(ILoggerManager logger, IConfigLoader configLoader) {
-            //TODO: fetch apikey and url from config file
             _logger = logger;
             _nluService = from apiKey in configLoader.WatsonApiKey
                           let authenticator = new IamAuthenticator(apiKey)
