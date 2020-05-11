@@ -19,7 +19,7 @@ namespace Comparator.Services {
                           let authenticator = new IamAuthenticator(apiKey)
                           select new NaturalLanguageUnderstandingService("2020-05-01", authenticator);
 
-            _nluService.UglyAccess(nlus => nlus.SetServiceUrl("hugobert"));
+            _nluService.Access(nlus => nlus.SetServiceUrl("hugobert"));
         }
         
         /// <summary>

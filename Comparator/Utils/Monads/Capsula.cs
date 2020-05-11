@@ -8,7 +8,7 @@ namespace Comparator.Utils.Monads {
         public abstract T Catch(Func<string, T> func);
         public abstract T Return(T defaultValue);
 
-        public abstract Capsule<T> UglyAccess(Action<T> action);
+        public abstract Capsule<T> Access(Action<T> action);
 
         public static Capsule<T> CreateSuccess(T value) => new Success<T>(value);
         public static Capsule<T> CreateFailure(string message) => new Failure<T>(message);
@@ -35,7 +35,7 @@ namespace Comparator.Utils.Monads {
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Success<TReturn>(func(_value));
 
 
-        public override Capsule<T> UglyAccess(Action<T> action) {
+        public override Capsule<T> Access(Action<T> action) {
             action(_value);
             return this;
         }
@@ -57,7 +57,7 @@ namespace Comparator.Utils.Monads {
 
         public override Capsule<TReturn> Map<TReturn>(Func<T, TReturn> func) => new Failure<TReturn>(_message);
         
-        public override Capsule<T> UglyAccess(Action<T> action) => this;
+        public override Capsule<T> Access(Action<T> action) => this;
 
         public override T Catch(Func<string, T> func) => func(_message);
         public override T Return(T defaultValue) => defaultValue;
