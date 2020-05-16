@@ -12,7 +12,7 @@ namespace Comparator.Services {
     public class ElasticSearchService : IElasticSearchService {
         private ILoggerManager _logger;
         private Capsule<ElasticClient> _client;
-        
+
         public ElasticSearchService(IConfigLoader config, ILoggerManager logger) {
             _logger = logger;
             _client = from url in config.EsUrl
@@ -25,9 +25,36 @@ namespace Comparator.Services {
                                                .BasicAuthentication(user, password)
                                                .DefaultIndex(defaultIndex));
         }
-        
+
+        public void SampleQuery(string objA, string objB) {
+            _client.Map(c => c
+                            .Search<DepccDataSet>(s => s
+                                                        .Size(10000)
+                                                        .Query(q => q
+                                                                   .Bool(b => b
+                                                                              .Must(m => m
+                                                                                        .Match(ma => ma
+                                                                                                     .Field(f => f.Text)
+                                                                                                     .Query(objA)), m => m
+                                                                                        .Match(ma => ma
+                                                                                                     .Field(f => f.Text)
+                                                                                                     .Query(objB)))
+                                                                              .Should(sh => sh
+                                                                                          .Terms(t => t
+                                                                                                     .Field(f => f.Text)
+                                                                                                     .Terms("faster", "better")))
+                                                                              
+                                                                              .MinimumShouldMatch(1)))))
+                   .Access(r => {
+                       _logger.LogInfo($"Hits: {r.Total}");
+                       foreach (var doc in r.Documents) {
+                           _logger.LogInfo(doc.Text);
+                           _logger.LogInfo(doc.DocumentId);
+                       }
+                   });
+        }
+
         public Capsule<ElasticSearchData> FetchData(string keywords) {
-            
             try {
                 var webRequest =
                     WebRequest.Create("https://www.techrepublic.com/forums/discussions/linux-vs-windows-3/");
