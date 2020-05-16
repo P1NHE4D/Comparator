@@ -28,8 +28,8 @@ namespace Comparator.Utils.Extensions {
             services.AddSingleton<IConfigLoader, ConfigLoader>();
         }
 
-        public static void ConfigureKibanaService(this IServiceCollection services) {
-            services.AddSingleton<IKibanaService, KibanaService>();
+        public static void ConfigureElasticSearchService(this IServiceCollection services) {
+            services.AddSingleton<IElasticSearchService, ElasticSearchService>();
         }
 
         public static void ConfigureWatsonService(this IServiceCollection services) {

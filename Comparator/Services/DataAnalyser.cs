@@ -5,11 +5,11 @@ using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 
 namespace Comparator.Services {
     public class DataAnalyser : IDataAnalyser {
-        private readonly IKibanaService _kibana;
+        private readonly IElasticSearchService _elasticSearch;
         private readonly IWatsonService _watson;
 
-        public DataAnalyser(IKibanaService kibana, IWatsonService watson) {
-            _kibana = kibana;
+        public DataAnalyser(IElasticSearchService elasticSearch, IWatsonService watson) {
+            _elasticSearch = elasticSearch;
             _watson = watson;
         }
 
@@ -35,7 +35,7 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() { }
             };
 
-            return from d in _kibana.FetchData(keywords)
+            return from d in _elasticSearch.FetchData(keywords)
                    from ar in _watson.AnalyseText(d.Data, features)
                    select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
         }

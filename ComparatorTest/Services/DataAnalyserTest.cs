@@ -9,9 +9,9 @@ namespace ComparatorTest.Services {
         private readonly DataAnalyser _analyser;
 
         public DataAnalyserTest() {
-            IKibanaService kibana = new KibanaService();
+            IElasticSearchService elasticSearch = new ElasticSearchService();
             IWatsonService watson = new WatsonService();
-            _analyser = new DataAnalyser(kibana, watson);
+            _analyser = new DataAnalyser(elasticSearch, watson);
         }
 
         [Fact]
@@ -24,9 +24,9 @@ namespace ComparatorTest.Services {
         }
     }
 
-    public class KibanaService : IKibanaService {
-        public Capsule<KibanaDataSet> FetchData(string keywords) {
-            return new Success<KibanaDataSet>(new KibanaDataSet {
+    public class ElasticSearchService : IElasticSearchService {
+        public Capsule<ElasticSearchData> FetchData(string keywords) {
+            return new Success<ElasticSearchData>(new ElasticSearchData {
                 Count = 5,
                 Data = keywords
             });

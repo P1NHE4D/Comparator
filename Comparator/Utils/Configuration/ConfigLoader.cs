@@ -10,10 +10,11 @@ namespace Comparator.Utils.Configuration {
         public Capsule<string> WatsonUrl => _config.Map(r => r["watson"]["url"].ToString());
         public Capsule<string> WatsonApiKey => _config.Map(r => r["watson"]["apikey"].ToString());
         
-        // Kibana
-        public Capsule<string> KibanaUrl => _config.Map(r => r["kibana"]["url"].ToString());
-        public Capsule<string> KibanaUser => _config.Map(r => r["kibana"]["user"].ToString());
-        public Capsule<string> KibanaPassword => _config.Map(r => r["kibana"]["password"].ToString());
+        // Elastic Search
+        public Capsule<string> EsUrl => _config.Map(r => r["ElasticSearch"]["url"].ToString());
+        public Capsule<string> EsUser => _config.Map(r => r["ElasticSearch"]["user"].ToString());
+        public Capsule<string> EsPassword => _config.Map(r => r["ElasticSearch"]["password"].ToString());
+        public Capsule<string> EsDefaultIndex => _config.Map(r => r["ElasticSearch"]["defaultIndex"].ToString());
         
         
         private readonly Capsule<JObject> _config;

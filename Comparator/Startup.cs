@@ -29,7 +29,7 @@ namespace Comparator {
             services.ConfigureSwagger();
             services.ConfigureHttpRequestSender();
             services.ConfigureConfigLoader();
-            services.ConfigureKibanaService();
+            services.ConfigureElasticSearchService();
             services.ConfigureWatsonService();
             services.ConfigureDataAnalyser();
             services.AddControllers();
