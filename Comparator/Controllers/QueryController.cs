@@ -41,27 +41,5 @@ namespace Comparator.Controllers {
                                     Message = e
                                 }));
         }
-
-        /// <summary>
-        /// Demo query to showcase the data retrieved from watson
-        /// </summary>
-        /// <returns>JSON object containing query results</returns>
-        /// <response code="200">Returns a JSON object containing the query results</response>
-        /// <response code="400">Invalid request</response>
-        [HttpGet]
-        [Route("DemoQuery")]
-        [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<QueryResult> DemoQuery() {
-            return _dataAnalyser.AnalyseQuery("Windows", "Linux", new []{""})
-                                .Map(r => (ActionResult) Ok(r))
-                                .Catch(e => {
-                                    _logger.LogError(e);
-                                    return BadRequest(new QueryResult() {
-                                        Message = e
-                                    });
-                                });
-        }
     }
 }
