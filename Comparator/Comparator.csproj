@@ -5,8 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Elasticsearch.Net" Version="7.7.0" />
       <PackageReference Include="IBM.Cloud.SDK.Core" Version="1.1.0" />
       <PackageReference Include="IBM.Watson.NaturalLanguageUnderstanding.v1" Version="4.4.0" />
+      <PackageReference Include="NEST" Version="7.7.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
       <PackageReference Include="NLog" Version="4.7.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
@@ -25,6 +27,11 @@
       <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.css.map" />
       <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.js" />
       <_ContentIncludedByDefault Remove="wwwroot\swagger\ui\dist\swagger-ui.js.map" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Utils\Authentication" />
+      <Folder Include="Utils\Authorization" />
     </ItemGroup>
 
 

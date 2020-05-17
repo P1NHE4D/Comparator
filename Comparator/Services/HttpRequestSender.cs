@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using Newtonsoft.Json;
 
@@ -11,8 +12,11 @@ namespace Comparator.Services {
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     public class HttpRequestSender : IHttpRequestSender {
         private static readonly Dictionary<string, HttpClient> Clients = new Dictionary<string, HttpClient>();
+        private ILoggerManager _logger;
 
-        public HttpRequestSender() { }
+        public HttpRequestSender(ILoggerManager logger) {
+            _logger = logger;
+        }
 
         private HttpClient GetHttpClient(string baseUri) {
             if (Clients.TryGetValue(baseUri, out var client)) return client;
@@ -36,11 +40,11 @@ namespace Comparator.Services {
                                  if (response.StatusCode == HttpStatusCode.Accepted)
                                      return Capsule<string>.CreateSuccess(await response.Content.ReadAsStringAsync());
                                  return Capsule<string>.CreateFailure(
-                                     $"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})");
+                                     $"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})", _logger);
                              });
             }
             catch (Exception e) {
-                return new Failure<string>(e.Message);
+                return new Failure<string>(e.Message, _logger);
             }
         }
 
@@ -71,11 +75,11 @@ namespace Comparator.Services {
                                  if (response.StatusCode == HttpStatusCode.Accepted)
                                      return Capsule<string>.CreateSuccess(await response.Content.ReadAsStringAsync());
                                  return Capsule<string>.CreateFailure(
-                                     $"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})");
+                                     $"Request failed! (StatusCode: {response.StatusCode}, URI: {baseUri + path})", _logger);
                              });
             }
             catch (Exception e) {
-                return Capsule<string>.CreateFailure(e.Message);
+                return Capsule<string>.CreateFailure(e.Message, _logger);
             }
         }
 
