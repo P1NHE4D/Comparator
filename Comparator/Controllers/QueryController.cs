@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Comparator.Models;
 using Comparator.Services;
 using Comparator.Utils.Logger;
@@ -23,7 +24,9 @@ namespace Comparator.Controllers {
         /// <remarks>
         /// Sample request:
         /// </remarks>
-        /// <param name="keywords"></param>
+        /// <param name="objA"></param>
+        /// <param name="objB"></param>
+        /// <param name="terms"></param>
         /// <returns>JSON object containing query results</returns>
         /// <response code="200">Returns a JSON object containing the QueryResult</response>
         /// <response code="400">Invalid query</response>
@@ -31,8 +34,8 @@ namespace Comparator.Controllers {
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<QueryResult> SendQuery([FromQuery] string keywords) {
-            return _dataAnalyser.AnalyseQuery(keywords)
+        public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string terms) {
+            return _dataAnalyser.AnalyseQuery(objA, objB, terms.Split(" "))
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => {
                                     _logger.LogError(e);
@@ -54,7 +57,7 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> DemoQuery() {
-            return _dataAnalyser.AnalyseQuery("Windows Linux")
+            return _dataAnalyser.AnalyseQuery("Windows", "Linux", new []{""})
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => {
                                     _logger.LogError(e);

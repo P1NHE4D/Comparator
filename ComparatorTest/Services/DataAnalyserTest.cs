@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Comparator.Models;
 using Comparator.Services;
 using Comparator.Utils.Monads;
@@ -16,9 +17,10 @@ namespace ComparatorTest.Services {
 
         [Fact]
         public void TestAnalyse() {
-            const string keywords = "Test";
-            _analyser.AnalyseQuery(keywords).Access(innerValue => {
-                Assert.Equal( keywords, innerValue.Results.AnalyzedText);
+            const string objA = "Test";
+            const string objB = "Bla";
+            _analyser.AnalyseQuery(objA, objB, new []{""}).Access(innerValue => {
+                Assert.Equal( objA + objB, innerValue.Results.AnalyzedText);
                 Assert.Equal(5, innerValue.ProcessedDataSets);
             });
         }
@@ -29,6 +31,13 @@ namespace ComparatorTest.Services {
             return new Success<ElasticSearchData>(new ElasticSearchData {
                 Count = 5,
                 Data = keywords
+            });
+        }
+
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
+            return new Success<ElasticSearchData>(new ElasticSearchData {
+                Count = 5,
+                Data = objA + objB
             });
         }
     }
