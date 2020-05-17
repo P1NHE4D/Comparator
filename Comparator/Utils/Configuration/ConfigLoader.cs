@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
@@ -19,14 +20,14 @@ namespace Comparator.Utils.Configuration {
         
         private readonly Capsule<JObject> _config;
 
-        public ConfigLoader(IHostEnvironment env) {
+        public ConfigLoader(IHostEnvironment env, ILoggerManager logger) {
             var filepath = env.IsDevelopment() ? "config.json" : "/etc/comparator/config.json";
             try {
                 var rawJson = File.ReadAllText(filepath);
                 _config = new Success<JObject>(JObject.Parse(rawJson));
             }
             catch (Exception e) {
-                _config = new Failure<JObject>($"Error loading config file: {e}");
+                _config = new Failure<JObject>($"Error loading config file: {e}", logger);
             }
         }
     }

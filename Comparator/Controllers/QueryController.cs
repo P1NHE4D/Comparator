@@ -35,14 +35,11 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string terms) {
-            return _dataAnalyser.AnalyseQuery(objA, objB, terms.Split(" "))
+            return _dataAnalyser.AnalyseQuery(objA, objB, terms?.Split(" "))
                                 .Map(r => (ActionResult) Ok(r))
-                                .Catch(e => {
-                                    _logger.LogError(e);
-                                    return BadRequest(new QueryResult() {
-                                        Message = e
-                                    });
-                                });
+                                .Catch(e => BadRequest(new QueryResult() {
+                                    Message = e
+                                }));
         }
 
         /// <summary>

@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using Comparator.Models;
 using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using Elasticsearch.Net;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Nest;
 
 namespace Comparator.Services {
@@ -21,7 +18,7 @@ namespace Comparator.Services {
         };
 
         private static readonly string[] Negatives = {
-            "more expensive", "slower", "older", "more difficult", "uglier"
+            "expensive", "slower", "older", "difficult", "uglier"
         };
 
         public ElasticSearchService(IConfigLoader config, ILoggerManager logger) {
@@ -39,17 +36,16 @@ namespace Comparator.Services {
 
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
             return RequestData(objA, objB, terms)
-                .Map(dataSet => new ElasticSearchData() {
-                    Count = dataSet.Count,
-                    Data = string.Join(" ", dataSet)
-                })
-                .Access(d => _logger.LogInfo(d.Data));
+                   .Map(dataSet => new ElasticSearchData() {
+                       Count = dataSet.Count,
+                       Data = string.Join(" ", dataSet)
+                   })
+                   .Access(d => _logger.LogInfo(d.Data));
         }
-        
+
         private Capsule<HashSet<string>> RequestData(string objA, string objB, IEnumerable<string> terms) {
-            
             var searchQuery = new SearchDescriptor<DepccDataSet>();
-            var searchTerms = new List<string>(terms).Concat(Positives).Concat(Negatives).ToArray();
+            var searchTerms = terms ?? Positives.Concat(Negatives);
             searchQuery.Size(10000)
                        .Query(q =>
                                   q.Match(m => m
@@ -62,26 +58,18 @@ namespace Comparator.Services {
                                                .Field(f => f.Text)
                                                .Terms(searchTerms)));
             return _client.Map(c => c.Search<DepccDataSet>(searchQuery))
-                          .Map(d => CleanData(d.Documents));
+                          .Map(CleanData);
         }
 
-        private static HashSet<string> CleanData(IEnumerable<DepccDataSet> data) {
-            var filteredData = new HashSet<string>();
-            foreach (var doc in data) {
-                if (!(ContainsMarker(doc, Positives) && ContainsMarker(doc, Negatives)) && !IsQuestion(doc)) {
-                    filteredData.Add(doc.Text);
-                }
-            }
+        private static HashSet<string> CleanData(ISearchResponse<DepccDataSet> data) =>
+            new HashSet<string>(from doc in data.Documents
+                                where !(ContainsMarker(doc, Positives) && ContainsMarker(doc, Negatives))
+                                where !IsQuestion(doc)
+                                select doc.Text);
 
-            return filteredData;
-        }
+        private static bool ContainsMarker(DepccDataSet doc, IEnumerable<string> markers) =>
+            markers.Any(doc.Text.Contains);
 
-        private static bool ContainsMarker(DepccDataSet doc, IEnumerable<string> markers) {
-            return markers.Any(marker => doc.Text.Contains(marker));
-        }
-
-        private static bool IsQuestion(DepccDataSet doc) {
-            return doc.Text.Contains("?");
-        }
+        private static bool IsQuestion(DepccDataSet doc) => doc.Text.Contains("?");
     }
 }
