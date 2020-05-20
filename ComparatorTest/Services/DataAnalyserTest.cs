@@ -20,7 +20,6 @@ namespace ComparatorTest.Services {
             const string objA = "Test";
             const string objB = "Bla";
             _analyser.AnalyseQuery(objA, objB, new []{""}).Access(innerValue => {
-                Assert.Equal( objA + objB, innerValue.Results.AnalyzedText);
                 Assert.Equal(5, innerValue.ProcessedDataSets);
             });
         }
@@ -29,15 +28,13 @@ namespace ComparatorTest.Services {
     public class ElasticSearchService : IElasticSearchService {
         public Capsule<ElasticSearchData> FetchData(string keywords) {
             return new Success<ElasticSearchData>(new ElasticSearchData {
-                Count = 5,
-                Data = keywords
+                Count = 5
             });
         }
 
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
             return new Success<ElasticSearchData>(new ElasticSearchData {
-                Count = 5,
-                Data = objA + objB
+                Count = 5
             });
         }
     }

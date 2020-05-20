@@ -27,9 +27,9 @@ namespace Comparator {
         public void ConfigureServices(IServiceCollection services) {
             services.ConfigureLoggerService();
             services.ConfigureSwagger();
-            services.ConfigureHttpRequestSender();
             services.ConfigureConfigLoader();
             services.ConfigureElasticSearchService();
+            services.ConfigureClassifier();
             services.ConfigureWatsonService();
             services.ConfigureDataAnalyser();
             services.AddControllers();

@@ -12,17 +12,11 @@ namespace Comparator.Services {
     public class ElasticSearchService : IElasticSearchService {
         private ILoggerManager _logger;
         private Capsule<ElasticClient> _client;
+        private IClassifier _classifier;
 
-        private static readonly string[] Positives = {
-            "cheaper", "better", "faster", "newer", "sturdier", "cooler", "easier"
-        };
-
-        private static readonly string[] Negatives = {
-            "expensive", "slower", "older", "difficult", "uglier"
-        };
-
-        public ElasticSearchService(IConfigLoader config, ILoggerManager logger) {
+        public ElasticSearchService(IConfigLoader config, ILoggerManager logger, IClassifier classifier) {
             _logger = logger;
+            _classifier = classifier;
             _client = from url in config.EsUrl
                       from user in config.EsUser
                       from password in config.EsPassword
@@ -36,16 +30,28 @@ namespace Comparator.Services {
 
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
             return RequestData(objA, objB, terms)
-                   .Map(dataSet => new ElasticSearchData() {
-                       Count = dataSet.Count,
-                       Data = string.Join(" ", dataSet)
-                   })
-                   .Access(d => _logger.LogInfo(d.Data));
+                .Access(d => {
+                    _logger.LogInfo("Prefers Object A: ");
+                    foreach (var sentence in d.ObjADataSet) {
+                        _logger.LogInfo(sentence);
+                    }
+                    _logger.LogInfo("##################");
+                    _logger.LogInfo("Prefers Object B: ");
+                    foreach (var sentence in d.ObjBDataSet) {
+                        _logger.LogInfo(sentence);
+                    }
+
+                    var objAPercentage = (double) d.ObjADataSet.Count / d.Count * 100.00;
+                    var objBPercentage = (double) d.ObjBDataSet.Count / d.Count * 100.00;
+                    _logger.LogInfo($"Total number of documents: {d.Count}");
+                    _logger.LogInfo($"Prefers Object A: {objAPercentage}%");
+                    _logger.LogInfo($"Prefers Object B: {objBPercentage}%");
+                });
         }
 
-        private Capsule<HashSet<string>> RequestData(string objA, string objB, IEnumerable<string> terms) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms) {
             var searchQuery = new SearchDescriptor<DepccDataSet>();
-            var searchTerms = terms ?? Positives.Concat(Negatives);
+            var searchTerms = terms ?? Constants.PosAndNegComparativeAdjectives;
             searchQuery.Size(10000)
                        .Query(q =>
                                   q.Match(m => m
@@ -58,18 +64,7 @@ namespace Comparator.Services {
                                                .Field(f => f.Text)
                                                .Terms(searchTerms)));
             return _client.Map(c => c.Search<DepccDataSet>(searchQuery))
-                          .Map(CleanData);
+                          .Map(d => _classifier.ClassifyData(d, objA, objB, searchTerms));
         }
-
-        private static HashSet<string> CleanData(ISearchResponse<DepccDataSet> data) =>
-            new HashSet<string>(from doc in data.Documents
-                                where !(ContainsMarker(doc, Positives) && ContainsMarker(doc, Negatives))
-                                where !IsQuestion(doc)
-                                select doc.Text);
-
-        private static bool ContainsMarker(DepccDataSet doc, IEnumerable<string> markers) =>
-            markers.Any(doc.Text.Contains);
-
-        private static bool IsQuestion(DepccDataSet doc) => doc.Text.Contains("?");
     }
 }

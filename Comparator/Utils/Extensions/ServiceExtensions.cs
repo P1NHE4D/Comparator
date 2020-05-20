@@ -20,16 +20,16 @@ namespace Comparator.Utils.Extensions {
             });
         }
 
-        public static void ConfigureHttpRequestSender(this IServiceCollection services) {
-            services.AddSingleton<IHttpRequestSender, HttpRequestSender>();
-        }
-
         public static void ConfigureConfigLoader(this IServiceCollection services) {
             services.AddSingleton<IConfigLoader, ConfigLoader>();
         }
 
         public static void ConfigureElasticSearchService(this IServiceCollection services) {
             services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+        }
+        
+        public static void ConfigureClassifier(this IServiceCollection services) {
+            services.AddSingleton<IClassifier, Classifier>();
         }
 
         public static void ConfigureWatsonService(this IServiceCollection services) {
