@@ -15,9 +15,9 @@ namespace Comparator.Services {
         /// <returns>returns a ClassifiedData object containing the classified sentences</returns>
         public ClassifiedData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB) {
             var filteredSentences = FilterSentences(
-                data.Documents.Select(d => d.Text).ToList(),
+                data.Documents.Select(d => d.Text),
                 objA,
-                objB);
+                objB).ToList();
             return new ClassifiedData {
                 ObjAData = ClassifySentences(filteredSentences, objA, objB),
                 ObjBData = ClassifySentences(filteredSentences, objB, objA)
@@ -32,12 +32,12 @@ namespace Comparator.Services {
         /// <param name="objB">second object</param>
         /// <param name="terms">user defined terms</param>
         /// <returns>returns a collection of ClassifiedData objects containing a ClassifiedData object for each user defined term</returns>
-        public ICollection<ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
+        public ISet<ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
                                                                 string objB, IEnumerable<string> terms) {
             var filteredSentences = FilterSentences(
                 data.Documents.Select(d => d.Text).ToList(),
                 objA,
-                objB);
+                objB).ToList();
             return terms.Select(term => new ClassifiedData {
                 ObjAData = ClassifySentences(filteredSentences, objA, objB, term),
                 ObjBData = ClassifySentences(filteredSentences, objB, objA, term)
@@ -53,11 +53,10 @@ namespace Comparator.Services {
              into sentenceGroup
              select sentenceGroup.First()).ToHashSet();
 
-        private static IList<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
+        private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
             sentences
                 .Where(s => !IsQuestion(s))
-                .Where(s => ContainsObjects(s, objA, objB))
-                .ToList();
+                .Where(s => ContainsObjects(s, objA, objB));
 
         private static bool IsQuestion(string sentence) => sentence.Contains("?");
 
