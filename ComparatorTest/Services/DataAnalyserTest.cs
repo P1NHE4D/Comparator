@@ -26,14 +26,13 @@ namespace ComparatorTest.Services {
     }
 
     public class ElasticSearchService : IElasticSearchService {
-        public Capsule<ElasticSearchData> FetchData(string keywords) {
-            return new Success<ElasticSearchData>(new ElasticSearchData {
-                Count = 5
-            });
-        }
 
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
             return new Success<ElasticSearchData>(new ElasticSearchData {
+                ClassifiedData = new ClassifiedData {
+                    ObjAData = new []{""},
+                    ObjBData = new []{""}
+                },
                 Count = 5
             });
         }
