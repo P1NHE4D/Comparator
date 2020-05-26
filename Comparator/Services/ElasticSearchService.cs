@@ -10,9 +10,9 @@ using Nest;
 
 namespace Comparator.Services {
     public class ElasticSearchService : IElasticSearchService {
-        private ILoggerManager _logger;
-        private Capsule<ElasticClient> _client;
-        private IClassifier _classifier;
+        private readonly ILoggerManager _logger;
+        private readonly Capsule<ElasticClient> _client;
+        private readonly IClassifier _classifier;
 
         public ElasticSearchService(IConfigLoader config, ILoggerManager logger, IClassifier classifier) {
             _logger = logger;
