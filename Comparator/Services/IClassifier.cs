@@ -5,6 +5,9 @@ using Nest;
 
 namespace Comparator.Services {
     public interface IClassifier {
-        ElasticSearchData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB, IEnumerable<string> aspects);
+        ClassifiedData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB);
+
+        ICollection<ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA, string objB,
+                                                IEnumerable<string> terms);
     }
 }

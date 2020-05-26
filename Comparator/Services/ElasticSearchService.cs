@@ -28,28 +28,35 @@ namespace Comparator.Services {
                                                .DefaultIndex(defaultIndex));
         }
 
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
+        /// <summary>
+        /// Retrieves data from elastic search and classifies the data according to predefined and user defined terms
+        /// </summary>
+        /// <param name="objA">first object</param>
+        /// <param name="objB">second object</param>
+        /// <param name="terms">user defined terms</param>
+        /// <returns></returns>
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) {
             return RequestData(objA, objB, terms)
                 .Access(d => {
                     _logger.LogInfo("Prefers Object A: ");
-                    foreach (var sentence in d.ObjADataSet) {
+                    foreach (var sentence in d.ClassifiedData.ObjAData) {
                         _logger.LogInfo(sentence);
                     }
                     _logger.LogInfo("##################");
                     _logger.LogInfo("Prefers Object B: ");
-                    foreach (var sentence in d.ObjBDataSet) {
+                    foreach (var sentence in d.ClassifiedData.ObjBData) {
                         _logger.LogInfo(sentence);
                     }
 
-                    var objAPercentage = (double) d.ObjADataSet.Count / d.Count * 100.00;
-                    var objBPercentage = (double) d.ObjBDataSet.Count / d.Count * 100.00;
+                    var objAPercentage = (double) d.ClassifiedData.ObjAData.Count / d.Count * 100.00;
+                    var objBPercentage = (double) d.ClassifiedData.ObjBData.Count / d.Count * 100.00;
                     _logger.LogInfo($"Total number of documents: {d.Count}");
                     _logger.LogInfo($"Prefers Object A: {objAPercentage}%");
                     _logger.LogInfo($"Prefers Object B: {objBPercentage}%");
                 });
         }
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms = null) {
             var searchQuery = new SearchDescriptor<DepccDataSet>();
             var searchTerms = terms ?? Constants.PosAndNegComparativeAdjectives;
             searchQuery.Size(10000)
@@ -63,8 +70,14 @@ namespace Comparator.Services {
                                   q.Terms(t => t
                                                .Field(f => f.Text)
                                                .Terms(searchTerms)));
-            return _client.Map(c => c.Search<DepccDataSet>(searchQuery))
-                          .Map(d => _classifier.ClassifyData(d, objA, objB, searchTerms));
+
+            return from c in _client
+                   let d = c.Search<DepccDataSet>(searchQuery)
+                   select new ElasticSearchData {
+                       UnclassifiedData = d.Documents,
+                       ClassifiedData = _classifier.ClassifyData(d, objA, objB),
+                       ClassifiedTermData = _classifier.ClassifyAndSplitData(d, objA, objB, searchTerms)
+                   };
         }
     }
 }

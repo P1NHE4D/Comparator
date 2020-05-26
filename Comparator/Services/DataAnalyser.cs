@@ -39,7 +39,7 @@ namespace Comparator.Services {
             };
 
             return from d in _elasticSearch.FetchData(objA, objB, terms)
-                   from ar in _watson.AnalyseText(string.Join(" ", d.ObjADataSet, d.ObjBDataSet), features)
+                   from ar in _watson.AnalyseText(string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
                    select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
         }
     }
