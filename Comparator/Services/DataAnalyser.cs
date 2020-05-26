@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Comparator.Models;
 using Comparator.Utils.Monads;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
@@ -39,7 +38,7 @@ namespace Comparator.Services {
             };
 
             return from d in _elasticSearch.FetchData(objA, objB, terms)
-                   from ar in _watson.AnalyseText(d.Data, features)
+                   from ar in _watson.AnalyseText(string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
                    select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
         }
     }

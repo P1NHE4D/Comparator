@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Comparator.Models;
 using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
@@ -10,19 +9,13 @@ using Nest;
 
 namespace Comparator.Services {
     public class ElasticSearchService : IElasticSearchService {
-        private ILoggerManager _logger;
-        private Capsule<ElasticClient> _client;
+        private readonly ILoggerManager _logger;
+        private readonly Capsule<ElasticClient> _client;
+        private readonly IClassifier _classifier;
 
-        private static readonly string[] Positives = {
-            "cheaper", "better", "faster", "newer", "sturdier", "cooler", "easier"
-        };
-
-        private static readonly string[] Negatives = {
-            "expensive", "slower", "older", "difficult", "uglier"
-        };
-
-        public ElasticSearchService(IConfigLoader config, ILoggerManager logger) {
+        public ElasticSearchService(IConfigLoader config, ILoggerManager logger, IClassifier classifier) {
             _logger = logger;
+            _classifier = classifier;
             _client = from url in config.EsUrl
                       from user in config.EsUser
                       from password in config.EsPassword
@@ -34,18 +27,20 @@ namespace Comparator.Services {
                                                .DefaultIndex(defaultIndex));
         }
 
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
-            return RequestData(objA, objB, terms)
-                   .Map(dataSet => new ElasticSearchData() {
-                       Count = dataSet.Count,
-                       Data = string.Join(" ", dataSet)
-                   })
-                   .Access(d => _logger.LogInfo(d.Data));
+        /// <summary>
+        /// Retrieves data from elastic search and classifies the data according to predefined and user defined terms
+        /// </summary>
+        /// <param name="objA">first object</param>
+        /// <param name="objB">second object</param>
+        /// <param name="terms">user defined terms</param>
+        /// <returns></returns>
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) {
+            return RequestData(objA, objB, terms);
         }
 
-        private Capsule<HashSet<string>> RequestData(string objA, string objB, IEnumerable<string> terms) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms = null) {
             var searchQuery = new SearchDescriptor<DepccDataSet>();
-            var searchTerms = terms ?? Positives.Concat(Negatives);
+            var searchTerms = terms ?? Constants.PosAndNegComparativeAdjectives;
             searchQuery.Size(10000)
                        .Query(q =>
                                   q.Match(m => m
@@ -57,19 +52,14 @@ namespace Comparator.Services {
                                   q.Terms(t => t
                                                .Field(f => f.Text)
                                                .Terms(searchTerms)));
-            return _client.Map(c => c.Search<DepccDataSet>(searchQuery))
-                          .Map(CleanData);
+
+            return from c in _client
+                   let d = c.Search<DepccDataSet>(searchQuery)
+                   select new ElasticSearchData {
+                       UnclassifiedData = d.Documents,
+                       ClassifiedData = _classifier.ClassifyData(d, objA, objB),
+                       ClassifiedTermData = _classifier.ClassifyAndSplitData(d, objA, objB, searchTerms)
+                   };
         }
-
-        private static HashSet<string> CleanData(ISearchResponse<DepccDataSet> data) =>
-            new HashSet<string>(from doc in data.Documents
-                                where !(ContainsMarker(doc, Positives) && ContainsMarker(doc, Negatives))
-                                where !IsQuestion(doc)
-                                select doc.Text);
-
-        private static bool ContainsMarker(DepccDataSet doc, IEnumerable<string> markers) =>
-            markers.Any(doc.Text.Contains);
-
-        private static bool IsQuestion(DepccDataSet doc) => doc.Text.Contains("?");
     }
 }
