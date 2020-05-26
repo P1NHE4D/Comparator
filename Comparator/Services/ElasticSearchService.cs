@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Comparator.Models;
 using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
@@ -36,24 +35,7 @@ namespace Comparator.Services {
         /// <param name="terms">user defined terms</param>
         /// <returns></returns>
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) {
-            return RequestData(objA, objB, terms)
-                .Access(d => {
-                    _logger.LogInfo("Prefers Object A: ");
-                    foreach (var sentence in d.ClassifiedData.ObjAData) {
-                        _logger.LogInfo(sentence);
-                    }
-                    _logger.LogInfo("##################");
-                    _logger.LogInfo("Prefers Object B: ");
-                    foreach (var sentence in d.ClassifiedData.ObjBData) {
-                        _logger.LogInfo(sentence);
-                    }
-
-                    var objAPercentage = (double) d.ClassifiedData.ObjAData.Count / d.Count * 100.00;
-                    var objBPercentage = (double) d.ClassifiedData.ObjBData.Count / d.Count * 100.00;
-                    _logger.LogInfo($"Total number of documents: {d.Count}");
-                    _logger.LogInfo($"Prefers Object A: {objAPercentage}%");
-                    _logger.LogInfo($"Prefers Object B: {objBPercentage}%");
-                });
+            return RequestData(objA, objB, terms);
         }
 
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms = null) {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Comparator.Models;
-using Comparator.Utils.Monads;
 using Nest;
 
 namespace Comparator.Services {

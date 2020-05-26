@@ -1,4 +1,3 @@
-using System;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 
 namespace Comparator.Models {

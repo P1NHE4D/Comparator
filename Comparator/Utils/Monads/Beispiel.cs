@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Comparator.Utils.Monads {
     // Unsers
