@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Comparator.Models;
 using Comparator.Utils.Monads;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
@@ -38,8 +40,20 @@ namespace Comparator.Services {
             };
 
             return from d in _elasticSearch.FetchData(objA, objB, terms)
-                   from ar in _watson.AnalyseText(string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
-                   select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
+                   from ar in _watson.AnalyseText(
+                       string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
+                   let prefersObjA = (double) d.ClassifiedData.ObjAData.Count /
+                                     (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
+                   let prefersObjB = (double) d.ClassifiedData.ObjBData.Count /
+                                     (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
+                   let termResults = d.ClassifiedTermData
+                   select new QueryResult {
+                       ProcessedDataSets = d.ClassifiedData.DataCount,
+                       ObjATendency = d.ClassifiedData.ObjATendency,
+                       ObjBTendency = d.ClassifiedData.ObjBTendency,
+                       TermResults = termResults,
+                       Results = ar
+                   };
         }
     }
 }

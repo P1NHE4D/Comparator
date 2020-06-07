@@ -34,13 +34,11 @@ namespace Comparator.Services {
         /// <param name="objB">second object</param>
         /// <param name="terms">user defined terms</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) {
-            return RequestData(objA, objB, terms);
-        }
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) =>
+            terms == null ? RequestData(objA, objB) : RequestData(objA, objB, terms);
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms = null) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB) {
             var searchQuery = new SearchDescriptor<DepccDataSet>();
-            var searchTerms = terms ?? Constants.PosAndNegComparativeAdjectives;
             searchQuery.Size(10000)
                        .Query(q =>
                                   q.Match(m => m
@@ -51,14 +49,49 @@ namespace Comparator.Services {
                                                .Query(objB)) &&
                                   q.Terms(t => t
                                                .Field(f => f.Text)
-                                               .Terms(searchTerms)));
+                                               .Terms(Constants.PosAndNegComparativeAdjectives)));
 
             return from c in _client
                    let d = c.Search<DepccDataSet>(searchQuery)
                    select new ElasticSearchData {
                        UnclassifiedData = d.Documents,
+                       ClassifiedData = _classifier.ClassifyData(d, objA, objB)
+                   };
+        }
+
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms) {
+            var firstQuery = new SearchDescriptor<DepccDataSet>();
+            var secondQuery = new SearchDescriptor<DepccDataSet>();
+            firstQuery.Size(10000)
+                       .Query(q =>
+                                  q.Match(m => m
+                                               .Field(f => f.Text)
+                                               .Query(objA)) &&
+                                  q.Match(m => m
+                                               .Field(f => f.Text)
+                                               .Query(objB)) &&
+                                  q.Terms(t => t
+                                               .Field(f => f.Text)
+                                               .Terms(Constants.PosAndNegComparativeAdjectives)));
+            secondQuery.Size(10000)
+                      .Query(q =>
+                                 q.Match(m => m
+                                              .Field(f => f.Text)
+                                              .Query(objA)) &&
+                                 q.Match(m => m
+                                              .Field(f => f.Text)
+                                              .Query(objB)) &&
+                                 q.Terms(t => t
+                                              .Field(f => f.Text)
+                                              .Terms(terms)));
+
+            return from c in _client
+                   let d = c.Search<DepccDataSet>(firstQuery)
+                   let s = c.Search<DepccDataSet>(secondQuery)
+                   select new ElasticSearchData {
+                       UnclassifiedData = d.Documents,
                        ClassifiedData = _classifier.ClassifyData(d, objA, objB),
-                       ClassifiedTermData = _classifier.ClassifyAndSplitData(d, objA, objB, searchTerms)
+                       ClassifiedTermData = _classifier.ClassifyAndSplitData(s, objA, objB, terms)
                    };
         }
     }
