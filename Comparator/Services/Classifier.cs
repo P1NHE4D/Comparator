@@ -18,9 +18,18 @@ namespace Comparator.Services {
                 data.Documents.Select(d => d.Text),
                 objA,
                 objB).ToList();
+
+            var objAData = ClassifySentences(filteredSentences, objA, objB);
+            var objBData = ClassifySentences(filteredSentences, objB, objA);
+            var dataCount = objAData.Count + objBData.Count;
+            var objATendency = (double) objAData.Count / dataCount;
+            var objBTendency = (double) objBData.Count / dataCount;
             return new ClassifiedData {
-                ObjAData = ClassifySentences(filteredSentences, objA, objB),
-                ObjBData = ClassifySentences(filteredSentences, objB, objA)
+                ObjAData = objAData,
+                ObjBData = objBData,
+                DataCount = dataCount,
+                ObjATendency = objATendency,
+                ObjBTendency = objBTendency
             };
         }
 
@@ -32,16 +41,25 @@ namespace Comparator.Services {
         /// <param name="objB">second object</param>
         /// <param name="terms">user defined terms</param>
         /// <returns>returns a collection of ClassifiedData objects containing a ClassifiedData object for each user defined term</returns>
-        public ISet<ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
+        public Dictionary<string, ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
                                                                 string objB, IEnumerable<string> terms) {
             var filteredSentences = FilterSentences(
                 data.Documents.Select(d => d.Text).ToList(),
                 objA,
                 objB).ToList();
-            return terms.Select(term => new ClassifiedData {
-                ObjAData = ClassifySentences(filteredSentences, objA, objB, term),
-                ObjBData = ClassifySentences(filteredSentences, objB, objA, term)
-            }).ToHashSet();
+            return new Dictionary<string, ClassifiedData>(from term in terms
+                                                          let objAData = ClassifySentences(filteredSentences, objA, objB, term)
+                                                          let objBData = ClassifySentences(filteredSentences, objB, objA, term)
+                                                          let dataCount = objAData.Count + objBData.Count
+                                                          let objATendency = (double) objAData.Count / dataCount 
+                                                          let objBTendency = (double) objBData.Count / dataCount
+                                                          select new KeyValuePair<string, ClassifiedData>(term, new ClassifiedData {
+                                                              ObjAData = objAData,
+                                                              ObjBData = objBData,
+                                                              ObjATendency = objATendency,
+                                                              ObjBTendency = objBTendency,
+                                                              DataCount = dataCount
+                                                          }));
         }
 
         private static ICollection<string> ClassifySentences(IEnumerable<string> sentences, string objA, string objB,
