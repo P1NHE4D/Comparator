@@ -74,9 +74,9 @@ namespace Comparator.Services {
                                               .Field(f => f.Text)
                                               .Terms(Constants.PosAndNegComparativeAdjectives)));
             return from c in _client
-                   let data = c.Search<DepccDataSet>(query)
+                   let data = c.Search<DepccDataSet>(query).Documents
                    select new ElasticSearchData {
-                       UnclassifiedData = data.Documents,
+                       UnclassifiedData = data,
                        ClassifiedData = _classifier.ClassifyData(data, objA, objB),
                        ClassifiedTermData = terms != null ?_classifier.ClassifyAndSplitData(data, objA, objB, terms) : null
                    };

@@ -7,12 +7,7 @@ using Nest;
 
 namespace Comparator.Services {
     public class Classifier : IClassifier {
-        private ILoggerManager _logger;
 
-        public Classifier(ILoggerManager logger) {
-            _logger = logger;
-        } 
-        
         /// <summary>
         /// Classifies documents contained in the data object according to predefined terms
         /// </summary>
@@ -20,9 +15,9 @@ namespace Comparator.Services {
         /// <param name="objA">first object</param>
         /// <param name="objB">second object</param>
         /// <returns>returns a ClassifiedData object containing the classified sentences</returns>
-        public ClassifiedData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB) {
+        public ClassifiedData ClassifyData(IEnumerable<DepccDataSet> data, string objA, string objB) {
             var filteredSentences = FilterSentences(
-                data.Documents.Select(d => d.Text),
+                data.Select(d => d.Text),
                 objA,
                 objB).ToList();
 
@@ -48,10 +43,10 @@ namespace Comparator.Services {
         /// <param name="objB">second object</param>
         /// <param name="aspects">user defined aspects</param>
         /// <returns>returns a collection of ClassifiedData objects containing a ClassifiedData object for each user defined term</returns>
-        public Dictionary<string, ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
+        public Dictionary<string, ClassifiedData> ClassifyAndSplitData(IEnumerable<DepccDataSet> data, string objA,
                                                                 string objB, IEnumerable<string> aspects) {
             var filteredSentences = FilterSentences(
-                data.Documents.Select(d => d.Text).ToList(),
+                data.Select(d => d.Text).ToList(),
                 objA,
                 objB).ToList();
             var objAOrigData = ClassifySentences(filteredSentences, objA, objB);

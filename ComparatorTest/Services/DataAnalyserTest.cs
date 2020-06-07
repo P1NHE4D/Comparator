@@ -33,7 +33,6 @@ namespace ComparatorTest.Services {
                     ObjAData = new []{""},
                     ObjBData = new []{""}
                 },
-                Count = 5
             });
         }
     }
