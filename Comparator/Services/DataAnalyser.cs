@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Comparator.Models;
 using Comparator.Utils.Monads;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;

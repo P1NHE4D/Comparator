@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Comparator.Models;
-using Nest;
 
 namespace Comparator.Services {
     public interface IClassifier {

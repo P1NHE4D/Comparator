@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Comparator.Models;
-using Comparator.Utils.Logger;
-using Nest;
 
 namespace Comparator.Services {
     public class Classifier : IClassifier {
