@@ -31,7 +31,8 @@ namespace ComparatorTest.Services {
             return new Success<ElasticSearchData>(new ElasticSearchData {
                 ClassifiedData = new ClassifiedData {
                     ObjAData = new []{""},
-                    ObjBData = new []{""}
+                    ObjBData = new []{""},
+                    DataCount = 5
                 },
             });
         }
