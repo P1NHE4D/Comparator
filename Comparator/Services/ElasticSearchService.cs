@@ -35,8 +35,9 @@ namespace Comparator.Services {
         /// <param name="terms">user defined terms</param>
         /// <returns></returns>
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) =>
-            terms == null ? RequestData(objA, objB) : RequestData(objA, objB, terms);
+            RequestData(objA, objB, terms);
 
+        /*
         private Capsule<ElasticSearchData> RequestData(string objA, string objB) {
             var searchQuery = new SearchDescriptor<DepccDataSet>();
             searchQuery.Size(10000)
@@ -57,23 +58,11 @@ namespace Comparator.Services {
                        UnclassifiedData = d.Documents,
                        ClassifiedData = _classifier.ClassifyData(d, objA, objB)
                    };
-        }
+        }*/
 
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms) {
-            var firstQuery = new SearchDescriptor<DepccDataSet>();
-            var secondQuery = new SearchDescriptor<DepccDataSet>();
-            firstQuery.Size(10000)
-                       .Query(q =>
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objA)) &&
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objB)) &&
-                                  q.Terms(t => t
-                                               .Field(f => f.Text)
-                                               .Terms(Constants.PosAndNegComparativeAdjectives)));
-            secondQuery.Size(10000)
+            var query = new SearchDescriptor<DepccDataSet>();
+            query.Size(10000)
                       .Query(q =>
                                  q.Match(m => m
                                               .Field(f => f.Text)
@@ -83,15 +72,13 @@ namespace Comparator.Services {
                                               .Query(objB)) &&
                                  q.Terms(t => t
                                               .Field(f => f.Text)
-                                              .Terms(terms)));
-
+                                              .Terms(Constants.PosAndNegComparativeAdjectives)));
             return from c in _client
-                   let d = c.Search<DepccDataSet>(firstQuery)
-                   let s = c.Search<DepccDataSet>(secondQuery)
+                   let data = c.Search<DepccDataSet>(query)
                    select new ElasticSearchData {
-                       UnclassifiedData = d.Documents,
-                       ClassifiedData = _classifier.ClassifyData(d, objA, objB),
-                       ClassifiedTermData = _classifier.ClassifyAndSplitData(s, objA, objB, terms)
+                       UnclassifiedData = data.Documents,
+                       ClassifiedData = _classifier.ClassifyData(data, objA, objB),
+                       ClassifiedTermData = terms != null ?_classifier.ClassifyAndSplitData(data, objA, objB, terms) : null
                    };
         }
     }

@@ -7,6 +7,6 @@ namespace Comparator.Services {
         ClassifiedData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB);
 
         Dictionary<string, ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA, string objB,
-                                                IEnumerable<string> terms);
+                                                IEnumerable<string> aspects);
     }
 }
