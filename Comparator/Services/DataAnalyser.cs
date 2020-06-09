@@ -63,7 +63,7 @@ namespace Comparator.Services {
                    let objBAspectEmotions = arObjB.Emotion?.Targets?.ToDictionary(r => r.Text, r => r.Emotion)
                    let objAAspectSentiment = arObjA.Sentiment?.Targets?.ToDictionary(r => r.Text, r => r.Score)
                    let objBAspectSentiment = arObjB.Sentiment?.Targets?.ToDictionary(r => r.Text, r => r.Score)
-            select new QueryResult {
+                   select new QueryResult {
                        ProcessedDataSets = d.ClassifiedData.DataCount,
                        ObjATendency = d.ClassifiedData.ObjATendency,
                        ObjBTendency = d.ClassifiedData.ObjBTendency,
