@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using IBM.Watson.NaturalLanguageUnderstanding.v1.Model;
 
 namespace Comparator.Models {
     public class QueryResult {
