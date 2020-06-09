@@ -5,7 +5,7 @@ namespace Comparator.Models {
         public int ProcessedDataSets { get; set; }
         public double ObjATendency { get; set; }
         public double ObjBTendency { get; set; }
-        public Dictionary<string, ClassifiedData> TermResults { get; set; }
+        public Dictionary<string, ClassifiedData> AspectResults { get; set; }
         public string Message { get; set; }
     }
 }
