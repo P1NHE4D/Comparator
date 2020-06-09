@@ -55,7 +55,7 @@ namespace Comparator.Services {
                    select new ElasticSearchData {
                        UnclassifiedData = data,
                        ClassifiedData = _classifier.ClassifyData(data, objA, objB),
-                       ClassifiedTermData = aspects != null ?_classifier.ClassifyAndSplitData(data, objA, objB, aspects) : null
+                       AspectData = aspects != null ?_classifier.ClassifyAndSplitData(data, objA, objB, aspects) : null
                    };
         }
     }
