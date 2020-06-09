@@ -32,6 +32,8 @@ namespace ComparatorTest.Services {
                 ClassifiedData = new ClassifiedData {
                     ObjAData = new []{""},
                     ObjBData = new []{""},
+                    ObjATendency = 0.5,
+                    ObjBTendency = 0.5,
                     DataCount = 5
                 },
             });

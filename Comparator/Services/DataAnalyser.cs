@@ -47,22 +47,22 @@ namespace Comparator.Services {
                    let prefersObjB = (double) d.ClassifiedData.ObjBData.Count /
                                      (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
                    let aspectResults = d.AspectData
-                   let objAEmotions = arObjA.Emotion.Document.Emotion
-                   let objBEmotions = arObjB.Emotion.Document.Emotion
-                   let objAKeywords = arObjA.Keywords.Select(k => new Keyword {
+                   let objAEmotions = arObjA.Emotion?.Document?.Emotion
+                   let objBEmotions = arObjB.Emotion?.Document?.Emotion
+                   let objAKeywords = arObjA.Keywords?.Select(k => new Keyword {
                        Text = k.Text,
                        Relevance = k.Relevance,
                        Sentiment = k.Sentiment.Score,
                    })
-                   let objBKeywords = arObjB.Keywords.Select(k => new Keyword {
+                   let objBKeywords = arObjB.Keywords?.Select(k => new Keyword {
                        Text = k.Text,
                        Relevance = k.Relevance,
                        Sentiment = k.Sentiment.Score,
                    })
-                   let objAAspectEmotions = arObjA.Emotion.Targets?.ToDictionary(r => r.Text, r => r.Emotion)
-                   let objBAspectEmotions = arObjB.Emotion.Targets?.ToDictionary(r => r.Text, r => r.Emotion)
-                   let objAAspectSentiment = arObjA.Sentiment.Targets?.ToDictionary(r => r.Text, r => r.Score)
-                   let objBAspectSentiment = arObjB.Sentiment.Targets?.ToDictionary(r => r.Text, r => r.Score)
+                   let objAAspectEmotions = arObjA.Emotion?.Targets?.ToDictionary(r => r.Text, r => r.Emotion)
+                   let objBAspectEmotions = arObjB.Emotion?.Targets?.ToDictionary(r => r.Text, r => r.Emotion)
+                   let objAAspectSentiment = arObjA.Sentiment?.Targets?.ToDictionary(r => r.Text, r => r.Score)
+                   let objBAspectSentiment = arObjB.Sentiment?.Targets?.ToDictionary(r => r.Text, r => r.Score)
             select new QueryResult {
                        ProcessedDataSets = d.ClassifiedData.DataCount,
                        ObjATendency = d.ClassifiedData.ObjATendency,
@@ -71,8 +71,8 @@ namespace Comparator.Services {
                        ObjBEmotions = objBEmotions,
                        ObjAKeywords = objAKeywords,
                        ObjBKeywords = objBKeywords,
-                       ObjASentimentScore = arObjA.Sentiment.Document.Score,
-                       ObjBSentimentScore = arObjB.Sentiment.Document.Score,
+                       ObjASentimentScore = arObjA.Sentiment?.Document?.Score,
+                       ObjBSentimentScore = arObjB.Sentiment?.Document?.Score,
                        AspectResults = aspectResults,
                        ObjAAspectEmotions = objAAspectEmotions,
                        ObjBAspectEmotions = objBAspectEmotions,
