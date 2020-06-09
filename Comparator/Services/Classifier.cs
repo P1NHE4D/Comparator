@@ -78,7 +78,7 @@ namespace Comparator.Services {
                 .Where(s => ContainsObjects(s, objA, objB));
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string aspect) =>
-            sentences.Where(s => s.IndexOf(aspect.ToLower(), StringComparison.InvariantCulture) >= 0);
+            sentences.Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
 
         private static bool IsQuestion(string sentence) => sentence.Contains("?");
 
