@@ -49,8 +49,7 @@ namespace Comparator.Services {
                        ProcessedDataSets = d.ClassifiedData.DataCount,
                        ObjATendency = d.ClassifiedData.ObjATendency,
                        ObjBTendency = d.ClassifiedData.ObjBTendency,
-                       TermResults = termResults,
-                       Results = ar
+                       TermResults = termResults
                    };
         }
     }
