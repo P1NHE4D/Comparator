@@ -18,9 +18,9 @@ namespace Comparator.Services {
         /// </summary>
         /// <param name="objA"></param>
         /// <param name="objB"></param>
-        /// <param name="terms"></param>
+        /// <param name="aspects"></param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
-        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, IEnumerable<string> terms) {
+        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, IEnumerable<string> aspects) {
             var features = new Features() {
                 Categories = new CategoriesOptions() { },
                 //Concepts = new ConceptsOptions() {},
@@ -37,7 +37,7 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() { }
             };
 
-            return from d in _elasticSearch.FetchData(objA, objB, terms)
+            return from d in _elasticSearch.FetchData(objA, objB, aspects)
                    from ar in _watson.AnalyseText(
                        string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
                    let prefersObjA = (double) d.ClassifiedData.ObjAData.Count /
