@@ -34,31 +34,28 @@ namespace Comparator.Services {
         /// <param name="objB">second object</param>
         /// <param name="terms">user defined terms</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) {
-            return RequestData(objA, objB, terms);
-        }
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) =>
+            RequestData(objA, objB, terms);
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms = null) {
-            var searchQuery = new SearchDescriptor<DepccDataSet>();
-            var searchTerms = terms ?? Constants.PosAndNegComparativeAdjectives;
-            searchQuery.Size(10000)
-                       .Query(q =>
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objA)) &&
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objB)) &&
-                                  q.Terms(t => t
-                                               .Field(f => f.Text)
-                                               .Terms(searchTerms)));
-
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects) {
+            var query = new SearchDescriptor<DepccDataSet>();
+            query.Size(10000)
+                      .Query(q =>
+                                 q.Match(m => m
+                                              .Field(f => f.Text)
+                                              .Query(objA)) &&
+                                 q.Match(m => m
+                                              .Field(f => f.Text)
+                                              .Query(objB)) &&
+                                 q.Terms(t => t
+                                              .Field(f => f.Text)
+                                              .Terms(Constants.PosAndNegComparativeAdjectives)));
             return from c in _client
-                   let d = c.Search<DepccDataSet>(searchQuery)
+                   let data = c.Search<DepccDataSet>(query).Documents
                    select new ElasticSearchData {
-                       UnclassifiedData = d.Documents,
-                       ClassifiedData = _classifier.ClassifyData(d, objA, objB),
-                       ClassifiedTermData = _classifier.ClassifyAndSplitData(d, objA, objB, searchTerms)
+                       UnclassifiedData = data,
+                       ClassifiedData = _classifier.ClassifyData(data, objA, objB),
+                       ClassifiedTermData = aspects != null ?_classifier.ClassifyAndSplitData(data, objA, objB, aspects) : null
                    };
         }
     }

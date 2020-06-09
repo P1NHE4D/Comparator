@@ -18,9 +18,9 @@ namespace Comparator.Services {
         /// </summary>
         /// <param name="objA"></param>
         /// <param name="objB"></param>
-        /// <param name="terms"></param>
+        /// <param name="aspects"></param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
-        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, IEnumerable<string> terms) {
+        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, IEnumerable<string> aspects) {
             var features = new Features() {
                 Categories = new CategoriesOptions() { },
                 //Concepts = new ConceptsOptions() {},
@@ -37,9 +37,20 @@ namespace Comparator.Services {
                 Sentiment = new SentimentOptions() { }
             };
 
-            return from d in _elasticSearch.FetchData(objA, objB, terms)
-                   from ar in _watson.AnalyseText(string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
-                   select new QueryResult {ProcessedDataSets = d.Count, Results = ar};
+            return from d in _elasticSearch.FetchData(objA, objB, aspects)
+                   from ar in _watson.AnalyseText(
+                       string.Join(" ", d.ClassifiedData.ObjAData, d.ClassifiedData.ObjBData), features)
+                   let prefersObjA = (double) d.ClassifiedData.ObjAData.Count /
+                                     (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
+                   let prefersObjB = (double) d.ClassifiedData.ObjBData.Count /
+                                     (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
+                   let termResults = d.ClassifiedTermData
+                   select new QueryResult {
+                       ProcessedDataSets = d.ClassifiedData.DataCount,
+                       ObjATendency = d.ClassifiedData.ObjATendency,
+                       ObjBTendency = d.ClassifiedData.ObjBTendency,
+                       TermResults = termResults
+                   };
         }
     }
 }

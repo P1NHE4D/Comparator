@@ -24,7 +24,7 @@ namespace Comparator.Controllers {
         /// </remarks>
         /// <param name="objA"></param>
         /// <param name="objB"></param>
-        /// <param name="terms"></param>
+        /// <param name="aspects"></param>
         /// <returns>JSON object containing query results</returns>
         /// <response code="200">Returns a JSON object containing the QueryResult</response>
         /// <response code="400">Invalid query</response>
@@ -32,8 +32,8 @@ namespace Comparator.Controllers {
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string terms) {
-            return _dataAnalyser.AnalyseQuery(objA, objB, terms?.Split(" "))
+        public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects) {
+            return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "))
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => BadRequest(new QueryResult() {
                                     Message = e

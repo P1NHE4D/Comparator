@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Comparator.Models;
-using Nest;
 
 namespace Comparator.Services {
     public class Classifier : IClassifier {
+
         /// <summary>
         /// Classifies documents contained in the data object according to predefined terms
         /// </summary>
@@ -13,14 +13,23 @@ namespace Comparator.Services {
         /// <param name="objA">first object</param>
         /// <param name="objB">second object</param>
         /// <returns>returns a ClassifiedData object containing the classified sentences</returns>
-        public ClassifiedData ClassifyData(ISearchResponse<DepccDataSet> data, string objA, string objB) {
+        public ClassifiedData ClassifyData(IEnumerable<DepccDataSet> data, string objA, string objB) {
             var filteredSentences = FilterSentences(
-                data.Documents.Select(d => d.Text),
+                data.Select(d => d.Text),
                 objA,
                 objB).ToList();
+
+            var objAData = ClassifySentences(filteredSentences, objA, objB);
+            var objBData = ClassifySentences(filteredSentences, objB, objA);
+            var dataCount = objAData.Count + objBData.Count;
+            var objATendency = dataCount == 0 ? 0 : (double) objAData.Count / dataCount;
+            var objBTendency = dataCount == 0 ? 0 : (double) objBData.Count / dataCount;
             return new ClassifiedData {
-                ObjAData = ClassifySentences(filteredSentences, objA, objB),
-                ObjBData = ClassifySentences(filteredSentences, objB, objA)
+                ObjAData = objAData,
+                ObjBData = objBData,
+                DataCount = dataCount,
+                ObjATendency = objATendency,
+                ObjBTendency = objBTendency
             };
         }
 
@@ -30,25 +39,35 @@ namespace Comparator.Services {
         /// <param name="data">data object retrieved from elastic search</param>
         /// <param name="objA">first object</param>
         /// <param name="objB">second object</param>
-        /// <param name="terms">user defined terms</param>
+        /// <param name="aspects">user defined aspects</param>
         /// <returns>returns a collection of ClassifiedData objects containing a ClassifiedData object for each user defined term</returns>
-        public ISet<ClassifiedData> ClassifyAndSplitData(ISearchResponse<DepccDataSet> data, string objA,
-                                                                string objB, IEnumerable<string> terms) {
+        public Dictionary<string, ClassifiedData> ClassifyAndSplitData(IEnumerable<DepccDataSet> data, string objA,
+                                                                string objB, IEnumerable<string> aspects) {
             var filteredSentences = FilterSentences(
-                data.Documents.Select(d => d.Text).ToList(),
+                data.Select(d => d.Text).ToList(),
                 objA,
                 objB).ToList();
-            return terms.Select(term => new ClassifiedData {
-                ObjAData = ClassifySentences(filteredSentences, objA, objB, term),
-                ObjBData = ClassifySentences(filteredSentences, objB, objA, term)
-            }).ToHashSet();
+            var objAOrigData = ClassifySentences(filteredSentences, objA, objB);
+            var objBOrigData = ClassifySentences(filteredSentences, objB, objA);
+            return new Dictionary<string, ClassifiedData>(from aspect in aspects
+                                                          let objAData = FilterSentences(objAOrigData, aspect).ToHashSet()
+                                                          let objBData = FilterSentences(objBOrigData, aspect).ToHashSet()
+                                                          let dataCount = objAData.Count + objBData.Count
+                                                          let objATendency = dataCount == 0 ? 0 : (double) objAData.Count / dataCount 
+                                                          let objBTendency = dataCount == 0 ? 0 : (double) objBData.Count / dataCount
+                                                          select new KeyValuePair<string, ClassifiedData>(aspect, new ClassifiedData {
+                                                              ObjAData = objAData,
+                                                              ObjBData = objBData,
+                                                              ObjATendency = objATendency,
+                                                              ObjBTendency = objBTendency,
+                                                              DataCount = dataCount
+                                                          }));
         }
 
-        private static ICollection<string> ClassifySentences(IEnumerable<string> sentences, string objA, string objB,
-                                                             string term = null) =>
+        private static ICollection<string> ClassifySentences(IEnumerable<string> sentences, string objA, string objB) =>
             (from sentence in sentences
-             where PrefersObject(objA, objB, sentence, term) &&
-                   !PrefersObject(objB, objA, sentence, term)
+             where PrefersObject(objA, objB, sentence) &&
+                   !PrefersObject(objB, objA, sentence)
              group sentence by sentence
              into sentenceGroup
              select sentenceGroup.First()).ToHashSet();
@@ -58,44 +77,38 @@ namespace Comparator.Services {
                 .Where(s => !IsQuestion(s))
                 .Where(s => ContainsObjects(s, objA, objB));
 
+        private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string aspect) =>
+            sentences.Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
+
         private static bool IsQuestion(string sentence) => sentence.Contains("?");
 
         private static bool ContainsObjects(string sentence, string objA, string objB) =>
             sentence.Contains(objA) && sentence.Contains(objB);
 
         // Returns true, if user prefers the target object compared to another object
-        private static bool PrefersObject(string targetObj, string comparisonObj, string sentence,
-                                          string target = null) {
+        private static bool PrefersObject(string targetObj, string comparisonObj, string sentence) {
             var targetObjPos = sentence.IndexOf(targetObj, StringComparison.InvariantCultureIgnoreCase);
-            var objPos = sentence.IndexOf(comparisonObj, StringComparison.InvariantCultureIgnoreCase);
-            if (targetObjPos == -1 || objPos == -1) return false;
+            var compObjPos = sentence.IndexOf(comparisonObj, StringComparison.InvariantCultureIgnoreCase);
+            if (targetObjPos == -1 || compObjPos == -1) return false;
 
             var negationPosAfterTarget = WordPos(sentence, targetObjPos, Constants.Negations);
-            var negationPosAfterObj = WordPos(sentence, objPos, Constants.Negations);
-            if (target != null) {
-                var termPos = WordPos(sentence, targetObjPos, target);
-                return (targetObjPos < termPos && termPos < objPos || // objA adj objB
-                        objPos < negationPosAfterObj && negationPosAfterObj < termPos &&
-                        termPos < targetObjPos // objB not adj objA
-                       )
-                       &&
-                       !(targetObjPos < negationPosAfterTarget && negationPosAfterTarget < termPos && termPos < objPos);
-            }
-
+            var negationPosAfterObj = WordPos(sentence, compObjPos, Constants.Negations);
             var posAdjPosAfterTarget = WordPos(sentence, targetObjPos, Constants.PosComparativeAdjectives);
             var negAdjPosAfterTarget = WordPos(sentence, targetObjPos, Constants.NegComparativeAdjectives);
-            var posAdjPosAfterObj = WordPos(sentence, objPos, Constants.PosComparativeAdjectives);
-            var negAdjPosAfterObj = WordPos(sentence, objPos, Constants.NegComparativeAdjectives);
-
-            return (targetObjPos < posAdjPosAfterTarget && posAdjPosAfterTarget < objPos || // objA better than objB
+            var posAdjPosAfterObj = WordPos(sentence, compObjPos, Constants.PosComparativeAdjectives);
+            var negAdjPosAfterObj = WordPos(sentence, compObjPos, Constants.NegComparativeAdjectives);
+            
+            return (targetObjPos < posAdjPosAfterTarget && posAdjPosAfterTarget < compObjPos || // objA better than objB
                     targetObjPos < negationPosAfterTarget && negationPosAfterTarget < negAdjPosAfterTarget &&
-                    negAdjPosAfterTarget < objPos || // objA not worse than objB
-                    objPos < negationPosAfterObj && negationPosAfterObj < posAdjPosAfterObj &&
+                    negAdjPosAfterTarget < compObjPos || // objA not worse than objB
+                    compObjPos < negationPosAfterObj && negationPosAfterObj < posAdjPosAfterObj &&
                     posAdjPosAfterObj < targetObjPos || //objB not better than objA
-                    objPos < negAdjPosAfterObj && negAdjPosAfterObj < targetObjPos) // objB worse than objA
+                    compObjPos < negAdjPosAfterObj && negAdjPosAfterObj < targetObjPos) // objB worse than objA
                    &&
                    !(targetObjPos < negationPosAfterTarget && negationPosAfterTarget < posAdjPosAfterTarget &&
-                     posAdjPosAfterObj < objPos);
+                     posAdjPosAfterObj < compObjPos ||
+                     compObjPos < negationPosAfterObj && negationPosAfterObj < negAdjPosAfterObj &&
+                     negAdjPosAfterObj < targetObjPos);
         }
 
         private static int WordPos(string text, int start, IEnumerable<string> wordList) =>
