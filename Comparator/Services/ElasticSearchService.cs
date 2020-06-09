@@ -37,30 +37,7 @@ namespace Comparator.Services {
         public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) =>
             RequestData(objA, objB, terms);
 
-        /*
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB) {
-            var searchQuery = new SearchDescriptor<DepccDataSet>();
-            searchQuery.Size(10000)
-                       .Query(q =>
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objA)) &&
-                                  q.Match(m => m
-                                               .Field(f => f.Text)
-                                               .Query(objB)) &&
-                                  q.Terms(t => t
-                                               .Field(f => f.Text)
-                                               .Terms(Constants.PosAndNegComparativeAdjectives)));
-
-            return from c in _client
-                   let d = c.Search<DepccDataSet>(searchQuery)
-                   select new ElasticSearchData {
-                       UnclassifiedData = d.Documents,
-                       ClassifiedData = _classifier.ClassifyData(d, objA, objB)
-                   };
-        }*/
-
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> terms) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects) {
             var query = new SearchDescriptor<DepccDataSet>();
             query.Size(10000)
                       .Query(q =>
@@ -78,7 +55,7 @@ namespace Comparator.Services {
                    select new ElasticSearchData {
                        UnclassifiedData = data,
                        ClassifiedData = _classifier.ClassifyData(data, objA, objB),
-                       ClassifiedTermData = terms != null ?_classifier.ClassifyAndSplitData(data, objA, objB, terms) : null
+                       ClassifiedTermData = aspects != null ?_classifier.ClassifyAndSplitData(data, objA, objB, aspects) : null
                    };
         }
     }
