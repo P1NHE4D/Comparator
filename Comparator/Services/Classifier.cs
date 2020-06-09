@@ -106,7 +106,9 @@ namespace Comparator.Services {
                     compObjPos < negAdjPosAfterObj && negAdjPosAfterObj < targetObjPos) // objB worse than objA
                    &&
                    !(targetObjPos < negationPosAfterTarget && negationPosAfterTarget < posAdjPosAfterTarget &&
-                     posAdjPosAfterObj < compObjPos);
+                     posAdjPosAfterObj < compObjPos ||
+                     compObjPos < negationPosAfterObj && negationPosAfterObj < negAdjPosAfterObj &&
+                     negAdjPosAfterObj < targetObjPos);
         }
 
         private static int WordPos(string text, int start, IEnumerable<string> wordList) =>
