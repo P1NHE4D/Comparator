@@ -27,7 +27,7 @@ namespace ComparatorTest.Services {
 
     public class ElasticSearchService : IElasticSearchService {
 
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms) {
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects) {
             return new Success<ElasticSearchData>(new ElasticSearchData {
                 ClassifiedData = new ClassifiedData {
                     ObjAData = new []{""},

@@ -32,10 +32,10 @@ namespace Comparator.Services {
         /// </summary>
         /// <param name="objA">first object</param>
         /// <param name="objB">second object</param>
-        /// <param name="terms">user defined terms</param>
+        /// <param name="aspects">user defined terms</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> terms = null) =>
-            RequestData(objA, objB, terms);
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects) =>
+            RequestData(objA, objB, aspects);
 
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects) {
             var query = new SearchDescriptor<DepccDataSet>();
