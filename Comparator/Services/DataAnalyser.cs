@@ -24,7 +24,7 @@ namespace Comparator.Services {
         public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects) {
             var features = new Features() {
                 Emotion = new EmotionOptions {
-                    Targets = aspects.ToList(),
+                    Targets = aspects?.ToList(),
                     Document = true
                 },
                 Keywords = new KeywordsOptions {
@@ -33,7 +33,7 @@ namespace Comparator.Services {
                 },
                 Sentiment = new SentimentOptions {
                     Document = true,
-                    Targets = aspects.ToList()
+                    Targets = aspects?.ToList()
                 }
             };
 
