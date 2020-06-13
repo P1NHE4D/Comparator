@@ -1,6 +1,5 @@
 using Comparator.Models;
 using Comparator.Services;
-using Comparator.Utils.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +7,9 @@ namespace Comparator.Controllers {
     [ApiController]
     [Route("api")]
     public class QueryController : ControllerBase {
-        private readonly ILoggerManager _logger;
         private readonly IDataAnalyser _dataAnalyser;
 
-        public QueryController(ILoggerManager logger, IDataAnalyser dataAnalyser) {
-            _logger = logger;
+        public QueryController(IDataAnalyser dataAnalyser) {
             _dataAnalyser = dataAnalyser;
         }
 
@@ -35,7 +32,7 @@ namespace Comparator.Controllers {
         public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects) {
             return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "))
                                 .Map(r => (ActionResult) Ok(r))
-                                .Catch(e => BadRequest(new QueryResult() {
+                                .Catch(e => BadRequest(new QueryResult {
                                     Message = e
                                 }));
         }
