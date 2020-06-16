@@ -20,7 +20,7 @@ namespace ComparatorTest.Services {
             const string objA = "Test";
             const string objB = "Bla";
             _analyser.AnalyseQuery(objA, objB, new []{""}).Access(innerValue => {
-                Assert.Equal(5, innerValue.ProcessedDataSets);
+                Assert.Equal(5, innerValue.Results.DataCount);
             });
         }
     }
