@@ -73,9 +73,9 @@ namespace Comparator.Services {
              select sentenceGroup.First()).ToHashSet();
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
-            sentences
-                .Where(s => !IsQuestion(s))
-                .Where(s => ContainsObjects(s, objA, objB));
+            sentences.AsParallel()
+                     .Where(s => !IsQuestion(s))
+                     .Where(s => ContainsObjects(s, objA, objB));
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string aspect) =>
             sentences.AsParallel().Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
