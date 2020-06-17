@@ -65,7 +65,7 @@ namespace Comparator.Services {
         }
 
         private static ICollection<string> ClassifySentences(IEnumerable<string> sentences, string objA, string objB) =>
-            (from sentence in sentences
+            (from sentence in sentences.AsParallel()
              where PrefersObject(objA, objB, sentence) &&
                    !PrefersObject(objB, objA, sentence)
              group sentence by sentence
@@ -73,12 +73,12 @@ namespace Comparator.Services {
              select sentenceGroup.First()).ToHashSet();
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
-            sentences
-                .Where(s => !IsQuestion(s))
-                .Where(s => ContainsObjects(s, objA, objB));
+            sentences.AsParallel()
+                     .Where(s => !IsQuestion(s))
+                     .Where(s => ContainsObjects(s, objA, objB));
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string aspect) =>
-            sentences.Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            sentences.AsParallel().Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
 
         private static bool IsQuestion(string sentence) => sentence.Contains("?");
 
