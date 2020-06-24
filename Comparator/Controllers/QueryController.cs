@@ -1,3 +1,4 @@
+using System;
 using Comparator.Models;
 using Comparator.Services;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,8 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects) {
+            if (string.IsNullOrWhiteSpace(objA)) return BadRequest("Object A is invalid. (Empty or Null)");
+            if (string.IsNullOrWhiteSpace(objB)) return BadRequest("Object B is invalid. (Empty or Null)");
             return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "))
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => BadRequest(new QueryResult {
