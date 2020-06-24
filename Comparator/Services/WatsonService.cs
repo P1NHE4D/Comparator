@@ -38,7 +38,7 @@ namespace Comparator.Services {
             }
             catch (Exception e) {
                 _logger.LogError(e.Message);
-                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.", _logger);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})", _logger);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Comparator.Services {
             }
             catch (Exception e) {
                 _logger.LogError(e.Message);
-                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.", _logger);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})", _logger);
             }
 
         }
@@ -83,7 +83,7 @@ namespace Comparator.Services {
             }
             catch (Exception e) {
                 _logger.LogError(e.Message);
-                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed.", _logger);
+                return new Failure<AnalysisResults>($"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})", _logger);
             }
         }
     }
