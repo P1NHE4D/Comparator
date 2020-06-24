@@ -39,11 +39,13 @@ namespace Comparator.Services {
 
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects) {
             var query = new SearchDescriptor<DepccDataSet>();
+            objA = objA[0].ToString().ToUpper() + objA.Substring(1).ToLower();
+            objB = objB[0].ToString().ToUpper() + objB.Substring(1).ToLower();
             query.Size(10000)
                       .Query(q =>
-                                 q.Match(m => m
+                                 (q.Match(m => m
                                               .Field(f => f.Text)
-                                              .Query(objA)) &&
+                                              .Query(objA))) &&
                                  q.Match(m => m
                                               .Field(f => f.Text)
                                               .Query(objB)) &&
