@@ -43,9 +43,9 @@ namespace Comparator.Services {
             objB = objB[0].ToString().ToUpper() + objB.Substring(1).ToLower();
             query.Size(10000)
                       .Query(q =>
-                                 (q.Match(m => m
+                                 q.Match(m => m
                                               .Field(f => f.Text)
-                                              .Query(objA))) &&
+                                              .Query(objA)) &&
                                  q.Match(m => m
                                               .Field(f => f.Text)
                                               .Query(objB)) &&
