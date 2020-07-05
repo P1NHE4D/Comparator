@@ -26,6 +26,7 @@ namespace Comparator.Controllers {
         /// <param name="objA"></param>
         /// <param name="objB"></param>
         /// <param name="aspects"></param>
+        /// <param name="quickSearch"></param>
         /// <returns>JSON object containing query results</returns>
         /// <response code="200">Returns a JSON object containing the QueryResult</response>
         /// <response code="400">Invalid query</response>
@@ -33,7 +34,7 @@ namespace Comparator.Controllers {
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects) {
+        public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects, bool quickSearch = true) {
             if (string.IsNullOrWhiteSpace(objA)) return BadRequest("Object A is invalid. (Empty or Null)");
             if (string.IsNullOrWhiteSpace(objB)) return BadRequest("Object B is invalid. (Empty or Null)");
             var ip = Request.HttpContext.Connection.RemoteIpAddress;
@@ -41,7 +42,7 @@ namespace Comparator.Controllers {
             var body = Request.Body;
             var path = Request.Path;
             _logger.LogInfo($"IP: {ip} \n PATH: {path} \n HEADER: {header} \n BODY: {body}");
-            return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "))
+            return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "), quickSearch)
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => BadRequest(new QueryResult {
                                     Message = e

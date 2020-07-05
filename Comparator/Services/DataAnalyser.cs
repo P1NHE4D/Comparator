@@ -20,8 +20,9 @@ namespace Comparator.Services {
         /// <param name="objA"></param>
         /// <param name="objB"></param>
         /// <param name="aspects"></param>
+        /// <param name="quickSearch">enables quickSearch</param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
-        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects) {
+        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects, bool quickSearch) {
             var features = new Features() {
                 Emotion = new EmotionOptions {
                     Targets = aspects?.ToList(),
@@ -37,7 +38,7 @@ namespace Comparator.Services {
                 }
             };
 
-            return from d in _elasticSearch.FetchData(objA, objB, aspects)
+            return from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
                    from arObjA in _watson.AnalyseText(
                        string.Join(" ", d.ClassifiedData.ObjAData), features)
                    from arObjB in _watson.AnalyseText(
