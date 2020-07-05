@@ -31,7 +31,6 @@ namespace Comparator.Controllers {
         /// <response code="400">Invalid query</response>
         [HttpGet]
         [Produces("application/json")]
-        [Route("/query")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects) {
