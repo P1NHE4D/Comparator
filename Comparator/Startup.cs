@@ -41,7 +41,7 @@ namespace Comparator {
                 opts.RoutePrefix = "docs/web-api";
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

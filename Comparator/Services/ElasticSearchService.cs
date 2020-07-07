@@ -40,32 +40,17 @@ namespace Comparator.Services {
 
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch) {
             var query = new SearchDescriptor<DepccDataSet>();
-            /*
-            var objATerms = new[] { objA, objA.ToLower(), objA.ToUpper()};
-            var objBTerms = new[] { objB, objB.ToLower(), objB.ToUpper()};
-            query.Size(10000)
+            query.Size(quickSearch ? 1000 : 10000)
                  .Query(q =>
-                            q.Terms(t => t
-                                        .Field(f => f.Text)
-                                        .Terms(objATerms)) &&
-                            q.Terms(t => t
-                                        .Field(f => f.Text)
-                                        .Terms(objBTerms)) &&
+                            q.Match(m => m
+                                         .Field(f => f.Text)
+                                         .Query(objA)) &&
+                            q.Match(m => m
+                                         .Field(f => f.Text)
+                                         .Query(objB)) &&
                             q.Terms(t => t
                                          .Field(f => f.Text)
                                          .Terms(Constants.PosAndNegComparativeAdjectives)));
-            */
-            query.Size(quickSearch ? 1000 : 10000)
-                      .Query(q =>
-                                 q.Match(m => m
-                                              .Field(f => f.Text)
-                                              .Query(objA)) &&
-                                 q.Match(m => m
-                                              .Field(f => f.Text)
-                                              .Query(objB)) &&
-                                 q.Terms(t => t
-                                              .Field(f => f.Text)
-                                              .Terms(Constants.PosAndNegComparativeAdjectives)));
             return from c in _client
                    let data = c.Search<DepccDataSet>(query).Documents
                    select new ElasticSearchData {

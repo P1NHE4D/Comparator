@@ -35,18 +35,20 @@ namespace Comparator.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<QueryResult> SendQuery([FromQuery] string objA, string objB, string aspects, bool quickSearch = true) {
+            _logger.LogInfo($"objA: {objA}, objB: {objB}, aspects: {aspects}, quickSearch: {quickSearch}");
             if (string.IsNullOrWhiteSpace(objA)) return BadRequest("Object A is invalid. (Empty or Null)");
             if (string.IsNullOrWhiteSpace(objB)) return BadRequest("Object B is invalid. (Empty or Null)");
             var ip = Request.HttpContext.Connection.RemoteIpAddress;
-            var header = Request.Headers;
-            var body = Request.Body;
             var path = Request.Path;
-            _logger.LogInfo($"IP: {ip} \n PATH: {path} \n HEADER: {header} \n BODY: {body}");
+            _logger.LogInfo($"IP: {ip} \n PATH: {path} \n");
             return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "), quickSearch)
                                 .Map(r => (ActionResult) Ok(r))
-                                .Catch(e => BadRequest(new QueryResult {
-                                    Message = e
-                                }));
+                                .Catch(e => {
+                                    _logger.LogInfo(e);
+                                    return BadRequest(new QueryResult {
+                                        Message = e
+                                    });
+                                });
         }
     }
 }
