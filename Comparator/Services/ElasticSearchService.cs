@@ -33,25 +33,24 @@ namespace Comparator.Services {
         /// <param name="objA">first object</param>
         /// <param name="objB">second object</param>
         /// <param name="aspects">user defined terms</param>
+        /// <param name="quickSearch">enables quickSearch</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects) =>
-            RequestData(objA, objB, aspects);
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch) =>
+            RequestData(objA, objB, aspects, quickSearch);
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch) {
             var query = new SearchDescriptor<DepccDataSet>();
-            objA = objA[0].ToString().ToUpper() + objA.Substring(1).ToLower();
-            objB = objB[0].ToString().ToUpper() + objB.Substring(1).ToLower();
-            query.Size(10000)
-                      .Query(q =>
-                                 q.Match(m => m
-                                              .Field(f => f.Text)
-                                              .Query(objA)) &&
-                                 q.Match(m => m
-                                              .Field(f => f.Text)
-                                              .Query(objB)) &&
-                                 q.Terms(t => t
-                                              .Field(f => f.Text)
-                                              .Terms(Constants.PosAndNegComparativeAdjectives)));
+            query.Size(quickSearch ? 1000 : 10000)
+                 .Query(q =>
+                            q.Match(m => m
+                                         .Field(f => f.Text)
+                                         .Query(objA)) &&
+                            q.Match(m => m
+                                         .Field(f => f.Text)
+                                         .Query(objB)) &&
+                            q.Terms(t => t
+                                         .Field(f => f.Text)
+                                         .Terms(Constants.PosAndNegComparativeAdjectives)));
             return from c in _client
                    let data = c.Search<DepccDataSet>(query).Documents
                    select new ElasticSearchData {
