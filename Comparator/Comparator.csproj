@@ -34,5 +34,9 @@
       <Folder Include="Utils\Authorization" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\landingpage\index.html" />
+    </ItemGroup>
+
 
 </Project>
