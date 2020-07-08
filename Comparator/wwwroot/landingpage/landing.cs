@@ -7,7 +7,7 @@ using Nest;
 namespace Comparator.wwwroot {
     public class Landing : ControllerBase
     {
-        private String page;
+        private static String page;
 
         public Landing() {
             var assembly = Assembly.GetExecutingAssembly();
