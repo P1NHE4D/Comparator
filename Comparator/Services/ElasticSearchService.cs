@@ -5,6 +5,7 @@ using Comparator.Utils.Configuration;
 using Comparator.Utils.Logger;
 using Comparator.Utils.Monads;
 using Elasticsearch.Net;
+using Microsoft.AspNetCore.Http;
 using Nest;
 
 namespace Comparator.Services {
@@ -35,10 +36,12 @@ namespace Comparator.Services {
         /// <param name="aspects">user defined terms</param>
         /// <param name="quickSearch">enables quickSearch</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch) =>
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects,
+                                                    bool quickSearch) =>
             RequestData(objA, objB, aspects, quickSearch);
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch) {
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects,
+                                                       bool quickSearch) {
             var query = new SearchDescriptor<DepccDataSet>();
             query.Size(quickSearch ? 1000 : 10000)
                  .Query(q =>
@@ -51,13 +54,18 @@ namespace Comparator.Services {
                             q.Terms(t => t
                                          .Field(f => f.Text)
                                          .Terms(Constants.PosAndNegComparativeAdjectives)));
-            return from c in _client
-                   let data = c.Search<DepccDataSet>(query).Documents
-                   select new ElasticSearchData {
-                       UnclassifiedData = data,
-                       ClassifiedData = _classifier.ClassifyData(data, objA, objB),
-                       AspectData = aspects != null ?_classifier.ClassifyAndSplitData(data, objA, objB, aspects) : null
-                   };
+
+            return _client
+                   .Map(c => c.Search<DepccDataSet>(query).Documents)
+                   .Bind(data => (data.Count == 0)
+                                     ? Capsule<ElasticSearchData>.CreateFailure($"Status code: {StatusCodes.Status416RequestedRangeNotSatisfiable}. No data found!")
+                                     : new Success<ElasticSearchData>(new ElasticSearchData {
+                                         UnclassifiedData = data,
+                                         ClassifiedData = _classifier.ClassifyData(data, objA, objB),
+                                         AspectData = aspects != null
+                                                          ? _classifier.ClassifyAndSplitData(data, objA, objB, aspects)
+                                                          : null
+                                     }));
         }
     }
 }
