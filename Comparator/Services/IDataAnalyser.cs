@@ -4,6 +4,6 @@ using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
     public interface IDataAnalyser {
-        Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects);
+        Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects, bool quickSearch);
     }
 }
