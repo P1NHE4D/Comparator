@@ -30,8 +30,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils\Authentication" />
-      <Folder Include="Utils\Authorization" />
+      <EmbeddedResource Include="wwwroot\landingpage\index.html" />
+      <Content Remove="wwwroot\landingpage\favicon.png" />
+      <EmbeddedResource Include="wwwroot\landingpage\favicon.png">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="wwwroot\landingpage\landing.cs" />
     </ItemGroup>
 
 
