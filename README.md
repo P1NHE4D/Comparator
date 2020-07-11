@@ -21,7 +21,7 @@ The comparator consists of a [ASP.NET Core](https://docs.microsoft.com/en-us/asp
 ## Requirements
 As already mentioned in the introduction, the comparator uses an elastic search data set and the natural language processing service
 by IBM Watson. Hence, in order to use the backend properly, you need a IBM Watson account and a working api key for the 
-natural language processing service. You can create an IBM watson account [here]().
+natural language processing service. You can create an IBM watson account [here](https://developer.ibm.com).
 
 Moreover, you also need an elastic search account that is entitled to access the elastic search cluster provided by the University of Hamburg.
 Still, if you don't have access to the elastic search cluster, you can also create or use your own elastic search index as a data source.
