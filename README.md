@@ -20,7 +20,7 @@ The comparator consists of a [ASP.NET Core](https://docs.microsoft.com/en-us/asp
 
 ## Requirements
 As already mentioned in the introduction, the comparator uses an elastic search data set and the natural language processing service
-by IBM Watson. Hence, in order to use the backend properly, you need a IBM Watson account and a working api key for the 
+by IBM Watson. Hence, in order to use the backend properly, you need an IBM Watson account and a working api key for the 
 natural language processing service. You can create an IBM watson account [here](https://developer.ibm.com).
 
 Moreover, you also need an elastic search account that is entitled to access the elastic search cluster provided by the University of Hamburg.
@@ -30,9 +30,8 @@ Still, if you don't have access to the elastic search cluster, you can also crea
 This section guides you through the process of installing the comparator backend on Max and/or Linux. If you are using a different operating
 system, please refer to the [official documentation](https://docs.microsoft.com/en-us/dotnet/core/install/) on how to install the required tools mentioned below.
 
-If you are looking for a guide on how to install the application on your mobile device, please refer to the [readme of the comparator client](https://github.com/P1NHE4D/ComparatorClient) 
-repository.
-
+If you are looking for a guide on how to install the application on your mobile device, please refer to the [readme](https://github.com/P1NHE4D/ComparatorClient)
+provided in the comparator client repository.
 ### Install .NET Core and ASP.NET Core
 The comparator backend is based on ASP.NET Core 3.1. After cloning the repository, execute the following commands
 to install the required software:
