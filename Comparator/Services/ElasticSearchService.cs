@@ -36,11 +36,16 @@ namespace Comparator.Services {
         /// <param name="aspects">user defined terms</param>
         /// <param name="quickSearch">enables quickSearch</param>
         /// <returns></returns>
-        public Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects,
+        public Capsule<ElasticSearchData> FetchData(string objA, string objB, ICollection<string> aspects,
                                                     bool quickSearch) =>
             RequestData(objA, objB, aspects, quickSearch);
 
-        private Capsule<ElasticSearchData> RequestData(string objA, string objB, IEnumerable<string> aspects,
+        private static bool IsDataValid(IReadOnlyCollection<DepccDataSet> data, IEnumerable<string> aspects) {
+            // TODO Vernünftig implementieren
+            return data.Count > 0;
+        }
+
+        private Capsule<ElasticSearchData> RequestData(string objA, string objB, ICollection<string> aspects,
                                                        bool quickSearch) {
             var query = new SearchDescriptor<DepccDataSet>();
             query.Size(quickSearch ? 1000 : 10000)
@@ -57,8 +62,8 @@ namespace Comparator.Services {
 
             return _client
                    .Map(c => c.Search<DepccDataSet>(query).Documents)
-                   .Bind(data => (data.Count == 0)
-                                     ? Capsule<ElasticSearchData>.CreateFailure($"Status code: {StatusCodes.Status416RequestedRangeNotSatisfiable}. No data found!")
+                   .Bind(data => !IsDataValid(data, aspects)
+                                     ? Capsule<ElasticSearchData>.CreateFailure($"Status code: {StatusCodes.Status416RequestedRangeNotSatisfiable}. No data found!", _logger)
                                      : new Success<ElasticSearchData>(new ElasticSearchData {
                                          UnclassifiedData = data,
                                          ClassifiedData = _classifier.ClassifyData(data, objA, objB),
