@@ -155,12 +155,12 @@ namespace ComparatorTest.Utils.Monads {
             // Arrange
             const string message = "I am a value";
             const string value2 = "I am another value";
-            var success = new Failure<string>(message);
+            var failure = new Failure<string>(message);
 
             // Act
-            var result = success.Catch(m => {
+            var result = failure.Catch(m => {
                 // Assert
-                Assert.Same(message, m);
+                Assert.Same(message, m.Message);
                 return value2;
             });
 
