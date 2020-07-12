@@ -55,7 +55,7 @@ brew install dotnet-sdk
 ```
 
 ### Config File
-If you are using your own elastic search index, replace the url and defaultIndex accordingly.
+For the application to work properly, you need to create a `config.json` file and place it in the root directory of the project folder. If you are using your own elastic search index, replace the url and defaultIndex accordingly.
 ```json
 {
   "watson": {
