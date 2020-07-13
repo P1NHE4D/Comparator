@@ -27,7 +27,7 @@ Moreover, you also need an elastic search account that is entitled to access the
 Still, if you don't have access to the elastic search cluster, you can also create or use your own elastic search index as a data source.
 
 ## Installation
-This section guides you through the process of installing the comparator backend on Max and/or Linux. If you are using a different operating
+This section guides you through the process of installing the comparator backend on Mac and/or Linux. If you are using a different operating
 system, please refer to the [official documentation](https://docs.microsoft.com/en-us/dotnet/core/install/) on how to install the required tools mentioned below.
 
 If you are looking for a guide on how to install the application on your mobile device, please refer to the [readme](https://github.com/P1NHE4D/ComparatorClient)
@@ -55,7 +55,7 @@ brew install dotnet-sdk
 ```
 
 ### Config File
-If you are using your own elastic search index, replace the url and defaultIndex accordingly.
+For the application to work properly, you need to create a `config.json` file and place it in the root directory of the project folder. If you are using your own elastic search index, replace the url and defaultIndex accordingly.
 ```json
 {
   "watson": {
