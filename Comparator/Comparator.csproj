@@ -36,6 +36,21 @@
 
     <ItemGroup>
       <EmbeddedResource Include="wwwroot\landingpage\index.html" />
+      <Content Remove="wwwroot\landingpage\index.css" />
+      <EmbeddedResource Include="wwwroot\landingpage\index.css">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\landingpage\favicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Controllers\landing.cs">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
 
