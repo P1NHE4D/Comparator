@@ -35,15 +35,23 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="wwwroot\landingpage\index.html" />
-      <Content Remove="wwwroot\landingpage\index.css" />
-      <EmbeddedResource Include="wwwroot\landingpage\index.css">
+      <EmbeddedResource Include="wwwroot\css\index.css">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="wwwroot\landingpage\favicon.png" />
+      <Content Remove="wwwroot\landingpage\index.css" />
+      <Content Update="Pages\LandingPage\GetLandingPage.cshtml">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+      <Content Update="Pages\LandingPage\LandingPage.cshtml">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+      <Content Update="Pages\LandingPage\Index.cshtml">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>
