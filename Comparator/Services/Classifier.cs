@@ -50,8 +50,8 @@ namespace Comparator.Services {
             var objAOrigData = ClassifySentences(filteredSentences, objA, objB);
             var objBOrigData = ClassifySentences(filteredSentences, objB, objA);
             return new Dictionary<string, ClassifiedData>(from aspect in aspects
-                                                          let objAData = FilterSentences(objAOrigData, aspect).ToHashSet()
-                                                          let objBData = FilterSentences(objBOrigData, aspect).ToHashSet()
+                                                          let objAData = FilterSentences(objAOrigData, aspect).ToList()
+                                                          let objBData = FilterSentences(objBOrigData, aspect).ToList()
                                                           let dataCount = objAData.Count + objBData.Count
                                                           let objATendency = dataCount == 0 ? 0 : (double) objAData.Count / dataCount 
                                                           let objBTendency = dataCount == 0 ? 0 : (double) objBData.Count / dataCount
@@ -70,7 +70,7 @@ namespace Comparator.Services {
                    !PrefersObject(objB, objA, sentence)
              group sentence by sentence
              into sentenceGroup
-             select sentenceGroup.First()).ToHashSet();
+             select sentenceGroup.First()).ToList();
 
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
             sentences.AsParallel()
