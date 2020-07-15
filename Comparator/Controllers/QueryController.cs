@@ -44,9 +44,9 @@ namespace Comparator.Controllers {
             return _dataAnalyser.AnalyseQuery(objA, objB, aspects?.Split(" "), quickSearch)
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => {
-                                    _logger.LogInfo(e);
+                                    _logger.LogInfo(e.Message);
                                     return BadRequest(new QueryResult {
-                                        Message = e
+                                        Message = e.Message
                                     });
                                 });
         }

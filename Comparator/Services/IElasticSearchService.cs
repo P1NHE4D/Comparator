@@ -4,6 +4,6 @@ using Comparator.Utils.Monads;
 
 namespace Comparator.Services {
     public interface IElasticSearchService {
-        Capsule<ElasticSearchData> FetchData(string objA, string objB, IEnumerable<string> aspects, bool quickSearch);
+        Capsule<ElasticSearchData> FetchData(string objA, string objB, ICollection<string> aspects, bool quickSearch);
     }
 }
