@@ -28,10 +28,10 @@ namespace Comparator.Services {
             return from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
                    let targets = d.AspectData != null ? (from k in d.AspectData
                                   where k.Value.DataCount > 0
-                                  select k.Key) : null
+                                  select k.Key).ToList() : null
                    let features = new Features {
                        Emotion = new EmotionOptions {
-                           Targets = targets?.ToList(),
+                           Targets = targets != null && targets.Any() ? targets : null,
                            Document = true
                        },
                        Keywords = new KeywordsOptions {
@@ -40,7 +40,7 @@ namespace Comparator.Services {
                        },
                        Sentiment = new SentimentOptions {
                            Document = true,
-                           Targets = targets?.ToList(),
+                           Targets = targets != null && targets.Any() ? targets : null,
                        }
                    }
                    from arObjA in _watson.AnalyseText(
