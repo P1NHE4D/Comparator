@@ -27,7 +27,7 @@ namespace Comparator.Services {
 
             return from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
                    let targets = d.AspectData != null ? (from k in d.AspectData
-                                  where k.Value.DataCount > 0
+                                  where k.Value.ObjAData.Count > 0 && k.Value.ObjBData.Count > 0
                                   select k.Key).ToList() : null
                    let features = new Features {
                        Emotion = new EmotionOptions {
