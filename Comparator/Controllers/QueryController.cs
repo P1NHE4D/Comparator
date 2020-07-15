@@ -38,6 +38,7 @@ namespace Comparator.Controllers {
             _logger.LogInfo($"objA: {objA}, objB: {objB}, aspects: {aspects}, quickSearch: {quickSearch}");
             if (string.IsNullOrWhiteSpace(objA)) return BadRequest("Object A is invalid. (Empty or Null)");
             if (string.IsNullOrWhiteSpace(objB)) return BadRequest("Object B is invalid. (Empty or Null)");
+            if (objA.ToLower().Equals(objB.ToLower())) return BadRequest("Object A and Object B are the same");
             var ip = Request.HttpContext.Connection.RemoteIpAddress;
             var path = Request.Path;
             _logger.LogInfo($"IP: {ip} \n PATH: {path} \n");
