@@ -31,7 +31,7 @@ namespace Comparator.Services {
                                   select k.Key).ToList()
                    let features = new Features {
                        Emotion = new EmotionOptions {
-                           Targets = targets.Any() ? targets : null,
+                           Targets = targets.Any() ? targets : new List<string>(),
                            Document = true
                        },
                        Keywords = new KeywordsOptions {
@@ -40,7 +40,7 @@ namespace Comparator.Services {
                        },
                        Sentiment = new SentimentOptions {
                            Document = true,
-                           Targets = targets.Any() ? targets : null,
+                           Targets = targets.Any() ? targets : new List<string>(),
                        }
                    }
                    from arObjA in _watson.AnalyseText(
