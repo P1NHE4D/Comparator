@@ -22,23 +22,27 @@ namespace Comparator.Services {
         /// <param name="aspects"></param>
         /// <param name="quickSearch">enables quickSearch</param>
         /// <returns>Returns a QueryResult object containing the results of the analysis</returns>
-        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects, bool quickSearch) {
-            var features = new Features() {
-                Emotion = new EmotionOptions {
-                    Targets = aspects?.ToList(),
-                    Document = true
-                },
-                Keywords = new KeywordsOptions {
-                    Sentiment = true,
-                    Limit = 5
-                },
-                Sentiment = new SentimentOptions {
-                    Document = true,
-                    Targets = aspects?.ToList()
-                }
-            };
+        public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects,
+                                                 bool quickSearch) {
 
             return from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
+                   let targets = (from k in d.AspectData
+                                  where k.Value.DataCount > 0
+                                  select k.Key).ToList()
+                   let features = new Features {
+                       Emotion = new EmotionOptions {
+                           Targets = targets.Any() ? targets : null,
+                           Document = true
+                       },
+                       Keywords = new KeywordsOptions {
+                           Sentiment = true,
+                           Limit = 5
+                       },
+                       Sentiment = new SentimentOptions {
+                           Document = true,
+                           Targets = targets.Any() ? targets : null,
+                       }
+                   }
                    from arObjA in _watson.AnalyseText(
                        string.Join(" ", d.ClassifiedData.ObjAData), features)
                    from arObjB in _watson.AnalyseText(
