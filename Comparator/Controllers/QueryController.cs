@@ -46,9 +46,7 @@ namespace Comparator.Controllers {
                                 .Map(r => (ActionResult) Ok(r))
                                 .Catch(e => {
                                     _logger.LogInfo(e.Message);
-                                    return BadRequest(new QueryResult {
-                                        Message = e.Message
-                                    });
+                                    return BadRequest(e.Message);
                                 });
         }
     }
