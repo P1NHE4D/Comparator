@@ -40,11 +40,6 @@ namespace Comparator.Services {
                                                     bool quickSearch) =>
             RequestData(objA, objB, aspects, quickSearch);
 
-        private static bool IsDataValid(IReadOnlyCollection<DepccDataSet> data, IEnumerable<string> aspects) {
-            // TODO Vernünftig implementieren
-            return data.Count > 0;
-        }
-
         private Capsule<ElasticSearchData> RequestData(string objA, string objB, ICollection<string> aspects,
                                                        bool quickSearch) {
             var query = new SearchDescriptor<DepccDataSet>();
@@ -62,8 +57,8 @@ namespace Comparator.Services {
 
             return _client
                    .Map(c => c.Search<DepccDataSet>(query).Documents)
-                   .Bind(data => !IsDataValid(data, aspects)
-                                     ? Capsule<ElasticSearchData>.CreateFailure($"Status code: {StatusCodes.Status416RequestedRangeNotSatisfiable}. No data found!", _logger)
+                   .Bind(data => data.Count <= 0
+                                     ? Capsule<ElasticSearchData>.CreateFailure($"Status code: {StatusCodes.Status404NotFound}. No data found!", _logger)
                                      : new Success<ElasticSearchData>(new ElasticSearchData {
                                          UnclassifiedData = data,
                                          ClassifiedData = _classifier.ClassifyData(data, objA, objB),
