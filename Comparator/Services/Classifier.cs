@@ -64,6 +64,7 @@ namespace Comparator.Services {
                                                           }));
         }
 
+        // classifies sentences into two groups, namely: pro objA and pro objB
         private static ICollection<string> ClassifySentences(IEnumerable<string> sentences, string objA, string objB) =>
             (from sentence in sentences.AsParallel()
              where PrefersObject(objA, objB, sentence) &&
@@ -72,16 +73,20 @@ namespace Comparator.Services {
              into sentenceGroup
              select sentenceGroup.First()).ToList();
 
+        // filters all sentences that are questions or than do not contain both objects
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string objA, string objB) =>
             sentences.AsParallel()
                      .Where(s => !IsQuestion(s))
                      .Where(s => ContainsObjects(s, objA, objB));
 
+        // filters all sentences that do not contain the given aspect
         private static IEnumerable<string> FilterSentences(IEnumerable<string> sentences, string aspect) =>
             sentences.AsParallel().Where(s => s.IndexOf(aspect, StringComparison.InvariantCultureIgnoreCase) >= 0);
 
+        // returns true, if sentence is a question
         private static bool IsQuestion(string sentence) => sentence.Contains("?");
 
+        // returns true, if sentence contains both objects
         private static bool ContainsObjects(string sentence, string objA, string objB) =>
             sentence.Contains(objA) && sentence.Contains(objB);
 
@@ -106,16 +111,18 @@ namespace Comparator.Services {
                     compObjPos < negAdjPosAfterObj && negAdjPosAfterObj < targetObjPos) // objB worse than objA
                    &&
                    !(targetObjPos < negationPosAfterTarget && negationPosAfterTarget < posAdjPosAfterTarget &&
-                     posAdjPosAfterObj < compObjPos ||
+                     posAdjPosAfterObj < compObjPos || //obj A not better than objB
                      compObjPos < negationPosAfterObj && negationPosAfterObj < negAdjPosAfterObj &&
-                     negAdjPosAfterObj < targetObjPos);
+                     negAdjPosAfterObj < targetObjPos); // objB not worse than objA
         }
 
+        // returns the position of the first word in a list of words that appears in a sentence
         private static int WordPos(string text, int start, IEnumerable<string> wordList) =>
             wordList.Select(word => WordPos(text, start, word))
                     .SkipWhile(wordPos => wordPos == -1)
                     .FirstOrDefault();
 
+        // returns the position of the word in a sentence
         private static int WordPos(string text, int start, string word) =>
             text.IndexOf(word, start, StringComparison.InvariantCultureIgnoreCase);
     }

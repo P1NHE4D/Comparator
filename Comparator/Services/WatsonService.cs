@@ -37,43 +37,5 @@ namespace Comparator.Services {
                                      : Capsule<AnalysisResults>.CreateSuccess(result.Result))
                        .MapFailure(e => new Exception(
                                        $"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})"));
-
-        /// <summary>
-        /// Performs a natural language analysis of the text passed as an argument
-        /// </summary>
-        /// <param name="url">text to be analysed</param>
-        /// <param name="features">feature object containing the selected options</param>
-        /// <param name="clean">disables webpage cleansing</param>
-        /// <param name="language">sets the language of the webpage to be analysed according to the ISO 639-1 standard</param>
-        /// <returns>returns a capsule containing AnalysisResults object</returns>
-        public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = true,
-                                                   string language = "en") =>
-            _nluService.Map(nlus => nlus.Analyze(features, url: url, language: language))
-                       .Bind(result =>
-                                 (result.StatusCode != StatusCodes.Status200OK)
-                                     ? Capsule<AnalysisResults>.CreateFailure(
-                                         $"Status code: {result.StatusCode}. Invalid request.", _logger)
-                                     : Capsule<AnalysisResults>.CreateSuccess(result.Result))
-                       .MapFailure(e => new Exception(
-                                       $"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})"));
-
-        /// <summary>
-        /// Performs a natural language analysis of the text passed as an argument
-        /// </summary>
-        /// <param name="html">text to be analysed</param>
-        /// <param name="features">feature object containing the selected options</param>
-        /// <param name="clean">disables webpage cleansing</param>
-        /// <param name="language">sets the language of the html to be analysed according to the ISO 639-1 standard</param>
-        /// <returns>returns a capsule containing AnalysisResults object</returns>
-        public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = true,
-                                                    string language = "en") =>
-            _nluService.Map(nlus => nlus.Analyze(features, html: html, language: language))
-                       .Bind(result =>
-                                 (result.StatusCode != StatusCodes.Status200OK)
-                                     ? Capsule<AnalysisResults>.CreateFailure(
-                                         $"Status code: {result.StatusCode}. Invalid request.", _logger)
-                                     : Capsule<AnalysisResults>.CreateSuccess(result.Result))
-                       .MapFailure(e => new Exception(
-                                       $"Status code: {StatusCodes.Status500InternalServerError}. Text analysis failed. ({e.Message})"));
     }
 }

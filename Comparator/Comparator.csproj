@@ -30,11 +30,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils\Authentication" />
-      <Folder Include="Utils\Authorization" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Include="wwwroot\css\index.css">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

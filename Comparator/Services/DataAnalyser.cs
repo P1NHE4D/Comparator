@@ -25,7 +25,9 @@ namespace Comparator.Services {
         public Capsule<QueryResult> AnalyseQuery(string objA, string objB, ICollection<string> aspects,
                                                  bool quickSearch) {
 
-            return from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
+            return // fetch elastic search data
+                   from d in _elasticSearch.FetchData(objA, objB, aspects, quickSearch)
+                   // remove aspects from target list that do not contain any data
                    let targets = d.AspectData != null ? (from k in d.AspectData
                                   where k.Value.ObjAData.Count > 0 && k.Value.ObjBData.Count > 0
                                   select k.Key).ToList() : null
@@ -43,10 +45,12 @@ namespace Comparator.Services {
                            Targets = targets != null && targets.Any() ? targets : null,
                        }
                    }
+                   // perform watson analysis
                    from arObjA in _watson.AnalyseText(
                        string.Join(" ", d.ClassifiedData.ObjAData), features)
                    from arObjB in _watson.AnalyseText(
                        string.Join(" ", d.ClassifiedData.ObjBData), features)
+                   // build and return query result object
                    let prefersObjA = (double) d.ClassifiedData.ObjAData.Count /
                                      (d.ClassifiedData.ObjAData.Count + d.ClassifiedData.ObjBData.Count)
                    let prefersObjB = (double) d.ClassifiedData.ObjBData.Count /

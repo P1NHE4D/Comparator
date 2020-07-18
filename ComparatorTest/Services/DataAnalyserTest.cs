@@ -47,13 +47,5 @@ namespace ComparatorTest.Services {
                 AnalyzedText = text
             });
         }
-
-        public Capsule<AnalysisResults> AnalyseUrl(string url, Features features, bool clean = false, string language = "en") {
-            return new Success<AnalysisResults>(new AnalysisResults());
-        }
-
-        public Capsule<AnalysisResults> AnalyseHtml(string html, Features features, bool clean = false, string language = "en") {
-            return new Success<AnalysisResults>(new AnalysisResults());
-        }
     }
 }
